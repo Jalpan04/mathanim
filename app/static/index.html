@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MathAnim - AI Video Studio</title>
+    <link rel="stylesheet" href="static/style.css" />
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+    <div class="container">
+
+
+      <div class="card">
+        <h1>MathAnim</h1>
+        <p class="subtitle">Autonomous AI Video Production Studio</p>
+
+        <textarea
+          id="problemInput"
+          placeholder="Describe your math problem (e.g., 'Visualize the area under the curve of y = x^2 from 0 to 2')"
+        ></textarea>
+
+        <button id="submitBtn">Generate Visualization</button>
+
+        <!-- Status Area -->
+        <div id="statusContainer" class="status-container">
+          <div class="status-header">
+            <span id="statusText">Idle</span>
+            <span id="progressText">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div id="progressBar" class="progress-bar-fill"></div>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message"></div>
+
+        <!-- Video Player -->
+        <div id="videoContainer" class="video-container">
+          <video id="resultVideo" controls playsinline>
+            <source id="resultSource" src="" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <a id="downloadLink" href="#" download class="download-link"
+            >Download Video</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <script src="static/script.js"></script>
+  </body>
+</html>
