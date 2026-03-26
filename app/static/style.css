@@ -127,11 +127,11 @@ button:disabled {
 }
 
 .error-message {
-  color: #fff;
+  color: #ff4d4d;
   margin-top: 2rem;
   padding: 1rem;
-  border: 1px solid #fff;
-  background: #000;
+  border: 1px solid #ff4d4d;
+  background: rgba(255, 77, 77, 0.1);
   border-radius: 0;
   font-family: 'Courier New', monospace;
   display: none;
@@ -156,4 +156,14 @@ video {
   color: #fff;
   text-decoration: underline;
   font-family: 'Courier New', monospace;
+}
+
+/* Star Rating Interactivity */
+.stars span {
+  transition: color 0.2s;
+}
+
+.stars span:hover,
+.stars span.active {
+  color: #fbbf24; /* Amber-400 */
 }

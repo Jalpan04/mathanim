@@ -4,13 +4,14 @@ load_dotenv()
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.models import ProblemRequest, JobResponse, JobStatus
-from workers.tasks import render_video, celery_app
 from celery.result import AsyncResult
-from app.agents.graph import define_graph
-from app.services.fallback_generator import generate_fallback_code
+from typing import Optional
 import uuid
 import os
+
+from app.api.models import ProblemRequest, JobResponse, JobStatus, RatingRequest
+from workers.tasks import celery_app, solve_and_render
+from app.rag.memory import SolutionMemory
 
 app = FastAPI(title="MathAnim API", version="0.1.0")
 
@@ -43,36 +44,11 @@ def solve_problem(request: ProblemRequest):
     """
     task_id = str(uuid.uuid4())
     
-    # Check for API Key to decide whether to run Agents or Dummy
-    openai_key = os.getenv("OPENAI_API_KEY")
+    # Run the Agentic Workflow in Background (Async)
+    from workers.tasks import solve_and_render
     
-    if openai_key and openai_key.startswith("sk-"):
-        # Run the Agentic Workflow
-        try:
-            graph_app = define_graph()
-            inputs = {"user_input": request.problem}
-            config = {"recursion_limit": 50}
-            
-            # Run graph (blocking for this prototype, but could be async/celery)
-            print("Invoking LangGraph agents...")
-            result = graph_app.invoke(inputs, config=config)
-            
-            manim_code = result.get("manim_code")
-            if not manim_code:
-                raise ValueError("Agents failed to generate code.")
-                
-        except Exception as e:
-            print(f"Agent Error: {e}")
-            print("Falling back to Ollama generator due to Agent Error.")
-            manim_code = generate_fallback_code(request.problem)
-    else:
-        # Fallback to Dummy Code (or use Ollama here too if preferred)
-        print("No Valid OPENAI_API_KEY found. Using Ollama.")
-        manim_code = generate_fallback_code(request.problem)
-
-    # Start the Celery task
     try:
-        task = render_video.apply_async(args=[manim_code, request.problem], task_id=task_id)
+        task = solve_and_render.apply_async(args=[request.problem, task_id], task_id=task_id)
     except Exception as e:
         print(f"Celery Dispatch Error: {e}")
         raise HTTPException(status_code=503, detail="Task output broker (Redis) is unavailable. Is Docker running?")
@@ -80,8 +56,10 @@ def solve_problem(request: ProblemRequest):
     return JobResponse(
         task_id=task_id,
         status="queued",
-        message="Problem submitted for visualization."
+        message="Problem submitted for processing."
     )
+    
+
 
 @app.get("/status/{task_id}", response_model=JobStatus)
 async def get_status(task_id: str):
@@ -108,3 +86,34 @@ async def get_status(task_id: str):
         return JobStatus(task_id=task_id, status="failed", info=str(task_result.result))
     
     return JobStatus(task_id=task_id, status=task_result.state.lower())
+
+from pydantic import BaseModel
+
+class RatingRequest(BaseModel):
+    task_id: str
+    rating: int
+
+@app.post("/rate")
+def rate_job(request: RatingRequest):
+    """
+    Reinforcement Learning endpoint.
+    Rating 5 => Memorize solution.
+    """
+    if request.rating < 5:
+        return {"message": "Rating received."}
+
+    # Retrieve task result
+    task_result = AsyncResult(request.task_id, app=celery_app)
+    if task_result.state == 'SUCCESS':
+        result = task_result.result
+        if result.get("status") == "completed":
+            prompt = result.get("prompt")
+            code = result.get("code")
+            
+            if prompt and code:
+                from app.rag.memory import SolutionMemory
+                mem = SolutionMemory()
+                mem.save_experience(prompt, code)
+                return {"message": "Solution memorized for future use!"}
+    
+    return {"message": "Could not memorize solution."}

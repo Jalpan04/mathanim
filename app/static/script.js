@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:8000'; // Or relative '/' if served by same backend
+const API_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin; // Dev vs Prod fallback
+// For cleaner prod: const API_URL = ''; // Relative path if served from same root
 
 const submitBtn = document.getElementById('submitBtn');
 const problemInput = document.getElementById('problemInput');
@@ -13,6 +14,7 @@ const downloadLink = document.getElementById('downloadLink');
 const errorMessage = document.getElementById('errorMessage');
 
 let pollInterval;
+let currentTaskId = null; // Track ID for rating
 
 submitBtn.addEventListener('click', async () => {
     const problem = problemInput.value.trim();
@@ -23,6 +25,8 @@ submitBtn.addEventListener('click', async () => {
     setLoading(true);
     updateStatus("Submitting problem...", 10);
     statusContainer.style.display = 'block';
+
+    // Removed local let currentTaskId = null;
 
     try {
         const response = await fetch(`${API_URL}/solve`, {
@@ -35,6 +39,7 @@ submitBtn.addEventListener('click', async () => {
 
         const data = await response.json();
         const taskId = data.task_id;
+        currentTaskId = taskId; // Save for rating
         
         updateStatus("Queued for processing...", 20);
         
@@ -46,6 +51,46 @@ submitBtn.addEventListener('click', async () => {
         setLoading(false);
     }
 });
+
+async function submitRating(rating) {
+    if (!currentTaskId) return;
+    
+    // Visual Feedback: Highlight stars
+    const stars = document.querySelectorAll('.stars span');
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.classList.add('active');
+            star.style.color = '#fbbf24';
+        } else {
+            star.classList.remove('active');
+            star.style.color = '';
+        }
+    });
+
+    // Text feedback
+    const feedback = document.getElementById('ratingFeedback');
+    feedback.innerText = "Saving learning...";
+    feedback.style.display = 'block';
+
+    try {
+        await fetch(`${API_URL}/rate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ task_id: currentTaskId, rating: rating })
+        });
+        
+        if (rating >= 5) {
+            feedback.innerText = "Video Memorized! 🧠";
+            // feedback.style.color = '#fbbf24'; // Removed per user request
+        } else {
+            feedback.innerText = "Rating Saved.";
+            // feedback.style.color = '#fff';
+        }
+    } catch (e) {
+        feedback.innerText = "Error saving rating.";
+        feedback.style.color = '#ff4d4d';
+    }
+}
 
 function pollStatus(taskId) {
     pollInterval = setInterval(async () => {
@@ -97,6 +142,9 @@ function showVideo(url) {
     videoContainer.style.display = 'block';
     
     downloadLink.href = fullUrl;
+    
+    // Show rating
+    document.getElementById('ratingContainer').style.display = 'block';
 }
 
 function showError(msg) {
@@ -109,6 +157,17 @@ function resetUI() {
     errorMessage.style.display = 'none';
     progressBar.style.width = '0%';
     resultSource.src = '';
+    
+    // Reset Rating
+    document.getElementById('ratingContainer').style.display = 'none';
+    document.getElementById('ratingFeedback').style.display = 'none';
+    
+    // Clear Star Visuals
+    const stars = document.querySelectorAll('.stars span');
+    stars.forEach(star => {
+        star.classList.remove('active');
+        star.style.color = '';
+    });
 }
 
 function setLoading(isLoading) {

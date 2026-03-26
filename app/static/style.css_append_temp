@@ -1,0 +1,10 @@
+
+/* Star Rating Interactivity */
+.stars span {
+  transition: color 0.2s;
+}
+
+.stars span:hover,
+.stars span.active {
+  color: #fbbf24; /* Amber-400 */
+}

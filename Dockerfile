@@ -2,7 +2,7 @@ FROM manimcommunity/manim:stable
 
 USER root
 # Install any additional dependencies if needed
-# RUN pip install ...
+RUN pip install sympy numpy
 
 WORKDIR /app
 

@@ -15,7 +15,6 @@
   </head>
   <body>
     <div class="container">
-    <div class="container">
 
 
       <div class="card">
@@ -52,6 +51,19 @@
           <a id="downloadLink" href="#" download class="download-link"
             >Download Video</a
           >
+          
+          <!-- Rating UI -->
+          <div id="ratingContainer" style="margin-top: 20px; text-align: center; border-top: 1px solid #333; padding-top: 20px;">
+            <p style="font-family: 'Courier New'; color: #888; margin-bottom: 10px;">RATE THIS RESULT (LEARNING MODE)</p>
+            <div class="stars" style="font-size: 2rem; cursor: pointer;">
+              <span onclick="submitRating(1)">★</span>
+              <span onclick="submitRating(2)">★</span>
+              <span onclick="submitRating(3)">★</span>
+              <span onclick="submitRating(4)">★</span>
+              <span onclick="submitRating(5)">★</span>
+            </div>
+            <p id="ratingFeedback" style="color: #4ade80; display: none; margin-top: 10px;">Thanks! System updated.</p>
+          </div>
         </div>
       </div>
     </div>

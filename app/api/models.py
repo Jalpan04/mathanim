@@ -14,3 +14,7 @@ class JobStatus(BaseModel):
     status: str
     video_url: Optional[str] = None
     info: Optional[str] = None
+
+class RatingRequest(BaseModel):
+    task_id: str
+    rating: int

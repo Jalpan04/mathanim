@@ -12,3 +12,4 @@ class GraphState(TypedDict):
     attempt_count: int
     video_path: Optional[str]
     task_id: str
+    proven_code: Optional[str]

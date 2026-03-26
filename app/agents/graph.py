@@ -19,28 +19,12 @@ def define_graph():
     
     workflow.add_edge("mathematician", "architect")
     workflow.add_edge("architect", "developer")
-    workflow.add_edge("developer", "critic")
     
-    # Conditional edge from Critic
-    # If approved -> End (or Executor in full pipeline)
-    # If rejected -> Back to Developer (simple loop)
+    # Speed Mode: Critic Disabled
+    workflow.add_edge("developer", END)
     
-    def check_critique(state: GraphState):
-        if state.get("error_log"):
-            # If there is an error log, go back to developer to fix
-            # Note: You'd need to update the developer prompts to look at error_log
-            return "developer"
-        else:
-            return END # Or "executor"
-            
-    workflow.add_conditional_edges(
-        "critic",
-        check_critique,
-        {
-            "developer": "developer",
-            END: END
-        }
-    )
+    # workflow.add_edge("developer", "critic")
+    # workflow.add_conditional_edges(...)
     
     app = workflow.compile()
     return app

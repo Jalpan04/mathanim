@@ -11,12 +11,12 @@ class ManimStore:
         
         # Use OpenAI Embeddings (requires OPENAI_API_KEY env var)
         # Or use default SentenceTransformer for local dev (no key needed)
-        self.embedding_fn = embedding_functions.DefaultEmbeddingFunction()
-        # To use OpenAI:
-        # self.embedding_fn = embedding_functions.OpenAIEmbeddingFunction(
-        #     api_key=os.environ.get("OPENAI_API_KEY"),
-        #     model_name="text-embedding-3-small"
-        # )
+        # Auto-Ingest if empty
+        if self.collection.count() == 0:
+            print("RAG: Collection empty. Starting auto-ingestion...")
+            self.ingest()
+        else:
+            print(f"RAG: Loaded {self.collection.count()} documents.")
 
     def ingest(self):
         if not os.path.exists(self.input_file):
