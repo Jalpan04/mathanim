@@ -54,9 +54,35 @@ def architect_node(state: GraphState):
     
     retrieved_docs = []
     if results['documents']:
-        # Flatten the list of lists
         retrieved_docs = results['documents'][0]
-        
+
     print(f"Retrieved {len(retrieved_docs)} docs.")
-    
-    return {"retrieved_docs": retrieved_docs, "proven_code": None}
+
+    # Determine archetype from query
+    archetype = _detect_archetype(query)
+    print(f"Architect: Detected archetype: '{archetype}'")
+
+    return {
+        "retrieved_docs": retrieved_docs,
+        "archetype": archetype,
+    }
+
+
+def _detect_archetype(query: str) -> str:
+    """Quick keyword detection based on the search query the architect generated."""
+    query_lower = query.lower()
+    if any(w in query_lower for w in ["axes", "plot", "graph", "function", "curve"]):
+        return "graphing"
+    if any(w in query_lower for w in ["circle", "triangle", "area", "radius", "geometry"]):
+        return "geometry"
+    if any(w in query_lower for w in ["integral", "derivative", "limit", "riemann", "calculus"]):
+        return "calculus"
+    if any(w in query_lower for w in ["unit circle", "sin", "cos", "trig", "angle"]):
+        return "unit_circle"
+    if any(w in query_lower for w in ["equation", "solve", "factor", "expand", "quadratic"]):
+        return "equation"
+    if any(w in query_lower for w in ["number line", "inequality", "fraction", "ratio"]):
+        return "number_line"
+    if any(w in query_lower for w in ["sequence", "series", "arithmetic", "geometric"]):
+        return "sequence"
+    return "general"

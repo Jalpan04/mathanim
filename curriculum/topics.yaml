@@ -1,0 +1,466 @@
+topics:
+  # Foundation & Arithmetic
+  - id: 1
+    name: "Number Line Addition & Subtraction"
+    archetype: number_line
+    keywords: ["number line", "add on number line", "subtract on number line"]
+    params:
+      start: -5
+      end: 10
+      a: 3
+      b: 2
+      operation: "addition"
+      label: "3 + 2 = 5"
+
+  - id: 2
+    name: "Multiplication as Area"
+    archetype: geometry
+    keywords: ["multiplication area", "array", "multiply as area"]
+    params:
+      shape: "Rectangle"
+      width: 4
+      height: 3
+      formula: "A = l \\times w"
+      calculation: "A = 4 \\times 3 = 12"
+
+  - id: 3
+    name: "Fractions: Parts of a Whole"
+    archetype: geometry
+    keywords: ["fraction", "parts of a whole", "one half", "one third", "one quarter"]
+    params:
+      shape: "Circle"
+      radius: 2.0
+      formula: "\\frac{1}{n}"
+      calculation: "\\frac{3}{4} \\text{ of a circle}"
+
+  - id: 4
+    name: "Equivalent Fractions & Simplification"
+    archetype: equation
+    keywords: ["equivalent fraction", "simplify fraction", "simplification"]
+    params:
+      title: "Equivalent Fractions"
+      steps: ["\\frac{2}{4}", "= \\frac{2 \\div 2}{4 \\div 2}", "= \\frac{1}{2}"]
+
+  - id: 5
+    name: "Ratios & Proportions"
+    archetype: equation
+    keywords: ["ratio", "proportion", "ratios and proportions"]
+    params:
+      title: "Ratios & Proportions"
+      steps: ["\\frac{a}{b} = \\frac{c}{d}", "a \\cdot d = b \\cdot c", "\\text{cross-multiply}"]
+
+  - id: 6
+    name: "Percentages as Fractions of 100"
+    archetype: equation
+    keywords: ["percentage", "percent", "fraction of 100"]
+    params:
+      title: "Percentages"
+      steps: ["25\\% = \\frac{25}{100}", "= \\frac{1}{4}", "= 0.25"]
+
+  - id: 7
+    name: "Mean, Median, and Mode"
+    archetype: equation
+    keywords: ["mean", "median", "mode", "average"]
+    params:
+      title: "Mean, Median, Mode"
+      steps: ["\\text{Data: } 2, 3, 4, 4, 5", "\\text{Mean} = \\frac{2+3+4+4+5}{5} = 3.6", "\\text{Median} = 4", "\\text{Mode} = 4"]
+
+  - id: 8
+    name: "Basic Probability"
+    archetype: equation
+    keywords: ["probability", "spinner", "dice", "likely"]
+    params:
+      title: "Basic Probability"
+      steps: ["P(\\text{event}) = \\frac{\\text{favorable}}{\\text{total}}", "P(\\text{heads}) = \\frac{1}{2}", "P(\\text{6 on die}) = \\frac{1}{6}"]
+
+  # Pre-Algebra & Geometry Basics
+  - id: 9
+    name: "The Cartesian Coordinate Plane"
+    archetype: graphing
+    keywords: ["cartesian", "coordinate plane", "x-axis", "y-axis", "origin"]
+    params:
+      formula: "0"
+      label: "Coordinate Plane"
+      x_range: [-5, 5, 1]
+      y_range: [-5, 5, 1]
+
+  - id: 10
+    name: "Order of Operations (PEMDAS)"
+    archetype: equation
+    keywords: ["pemdas", "order of operations", "bodmas"]
+    params:
+      title: "Order of Operations (PEMDAS)"
+      steps: ["2 + 3 \\times 4", "= 2 + 12", "= 14"]
+
+  - id: 11
+    name: "Evaluating Algebraic Expressions"
+    archetype: equation
+    keywords: ["evaluate", "algebraic expression", "substitute", "expression"]
+    params:
+      title: "Evaluating Expressions"
+      steps: ["3x + 2, \\text{ when } x=4", "= 3(4) + 2", "= 12 + 2", "= 14"]
+
+  - id: 12
+    name: "2D Area & Perimeter (Rectangles, Triangles)"
+    archetype: geometry
+    keywords: ["area of rectangle", "perimeter", "2d area", "area triangle"]
+    params:
+      shape: "Rectangle"
+      width: 4.0
+      height: 3.0
+      formula: "A = l \\times w"
+      calculation: "A = 4 \\times 3 = 12"
+
+  - id: 13
+    name: "Properties of Angles"
+    archetype: geometry
+    keywords: ["angle", "acute", "obtuse", "right angle", "degrees"]
+    params:
+      shape: "Triangle"
+      radius: 2.0
+      formula: "\\text{Acute, Obtuse, Right}"
+      calculation: "\\theta < 90^\\circ, \\theta > 90^\\circ, \\theta = 90^\\circ"
+
+  - id: 14
+    name: "Circle Geometry (Radius, Diameter, Circumference)"
+    archetype: geometry
+    keywords: ["circle geometry", "radius", "diameter", "circumference"]
+    params:
+      shape: "Circle"
+      radius: 2.0
+      formula: "C = 2\\pi r"
+      calculation: "C = 2\\pi(2) = 4\\pi"
+
+  - id: 15
+    name: "Area of a Circle"
+    archetype: geometry
+    keywords: ["area of a circle", "area circle", "pi r squared"]
+    params:
+      shape: "Circle"
+      radius: 2.0
+      formula: "A = \\pi r^2"
+      calculation: "A = \\pi (2)^2 = 4\\pi"
+
+  - id: 16
+    name: "Volume of Rectangular Prisms"
+    archetype: equation
+    keywords: ["volume", "rectangular prism", "box volume"]
+    params:
+      title: "Volume of a Rectangular Prism"
+      steps: ["V = l \\times w \\times h", "V = 4 \\times 3 \\times 2", "V = 24 \\text{ units}^3"]
+
+  # Algebra I
+  - id: 17
+    name: "Solving 1-Step Linear Equations"
+    archetype: equation
+    keywords: ["solve equation", "one step equation", "linear equation", "solve for x"]
+    params:
+      title: "Solving 1-Step Equation"
+      steps: ["x + 5 = 12", "x = 12 - 5", "x = 7"]
+
+  - id: 18
+    name: "Solving Multi-Step Equations"
+    archetype: equation
+    keywords: ["multi step equation", "two step", "solve multi step"]
+    params:
+      title: "Multi-Step Equation"
+      steps: ["2x + 3 = 11", "2x = 11 - 3", "2x = 8", "x = 4"]
+
+  - id: 19
+    name: "Inequalities on a Number Line"
+    archetype: number_line
+    keywords: ["inequality", "inequalities", "greater than", "less than", "number line"]
+    params:
+      start: -3
+      end: 7
+      a: 3
+      b: -1
+      operation: "inequality"
+      label: "x > 3"
+
+  - id: 20
+    name: "Graphing Linear Equations"
+    archetype: graphing
+    keywords: ["graph linear", "y=mx+b", "slope intercept", "linear equation graph"]
+    params:
+      formula: "2*x + 1"
+      label: "y = 2x + 1"
+      x_range: [-5, 5, 1]
+      y_range: [-10, 10, 2]
+
+  - id: 21
+    name: "Calculating Slope"
+    archetype: graphing
+    keywords: ["slope", "rise over run", "gradient", "calculate slope"]
+    params:
+      formula: "2*x + 1"
+      label: "m = \\frac{\\Delta y}{\\Delta x} = 2"
+      x_range: [-3, 3, 1]
+      y_range: [-5, 7, 1]
+
+  - id: 22
+    name: "Systems of Equations (Graphing)"
+    archetype: graphing
+    keywords: ["system of equations", "intersection", "systems graphing"]
+    params:
+      formula: "x + 1"
+      label: "y=x+1 \\text{ and } y=-x+3"
+      x_range: [-3, 4, 1]
+      y_range: [-2, 5, 1]
+
+  - id: 23
+    name: "Exponent Rules"
+    archetype: equation
+    keywords: ["exponent rules", "power rule", "exponents multiplication", "am an"]
+    params:
+      title: "Exponent Rules"
+      steps: ["a^m \\cdot a^n = a^{m+n}", "x^3 \\cdot x^2 = x^5", "\\frac{a^m}{a^n} = a^{m-n}"]
+
+  - id: 24
+    name: "Scientific Notation"
+    archetype: equation
+    keywords: ["scientific notation", "powers of ten", "exponent notation"]
+    params:
+      title: "Scientific Notation"
+      steps: ["6{,}000{,}000 = 6 \\times 10^6", "0.000045 = 4.5 \\times 10^{-5}"]
+
+  # Geometry & Algebra II
+  - id: 25
+    name: "The Pythagorean Theorem"
+    archetype: geometry
+    keywords: ["pythagorean theorem", "a squared b squared", "right triangle hypotenuse", "a2+b2=c2"]
+    params:
+      shape: "Triangle"
+      radius: 2.5
+      formula: "a^2 + b^2 = c^2"
+      calculation: "3^2 + 4^2 = 5^2"
+
+  - id: 26
+    name: "Multiplying Binomials (FOIL)"
+    archetype: equation
+    keywords: ["foil", "binomial", "multiply binomials", "foil method"]
+    params:
+      title: "FOIL Method"
+      steps: ["(x+2)(x+3)", "= x^2 + 3x + 2x + 6", "= x^2 + 5x + 6"]
+
+  - id: 27
+    name: "Factoring Quadratic Expressions"
+    archetype: equation
+    keywords: ["factor", "factoring", "quadratic", "factor quadratic"]
+    params:
+      title: "Factoring Quadratics"
+      steps: ["x^2 + 5x + 6", "= (x + 2)(x + 3)"]
+
+  - id: 28
+    name: "Graphing Parabolas"
+    archetype: graphing
+    keywords: ["parabola", "graph quadratic", "y=ax2", "quadratic graph"]
+    params:
+      formula: "x**2 - 2*x - 3"
+      label: "y = x^2 - 2x - 3"
+      x_range: [-2, 4, 1]
+      y_range: [-5, 5, 1]
+
+  - id: 29
+    name: "The Quadratic Formula"
+    archetype: equation
+    keywords: ["quadratic formula", "discriminant", "b squared minus 4ac"]
+    params:
+      title: "The Quadratic Formula"
+      steps: ["ax^2 + bx + c = 0", "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}", "x^2 - 5x + 6 = 0", "x = \\frac{5 \\pm 1}{2}", "x = 3 \\text{ or } x = 2"]
+
+  - id: 30
+    name: "Geometric Transformations"
+    archetype: geometry
+    keywords: ["translation", "rotation", "reflection", "transformation", "geometric transformation"]
+    params:
+      shape: "Triangle"
+      radius: 1.5
+      formula: "T(x, y) = (x+a, y+b)"
+      calculation: "\\text{Translation by } (2, 1)"
+
+  - id: 31
+    name: "Similar Triangles & Proportions"
+    archetype: geometry
+    keywords: ["similar triangles", "similar", "proportional triangles"]
+    params:
+      shape: "Triangle"
+      radius: 2.0
+      formula: "\\frac{a_1}{a_2} = \\frac{b_1}{b_2}"
+      calculation: "\\text{Scale factor} = 2"
+
+  - id: 32
+    name: "Exponential Growth vs. Decay"
+    archetype: graphing
+    keywords: ["exponential growth", "exponential decay", "exponential", "growth decay"]
+    params:
+      formula: "2**x"
+      label: "y = 2^x"
+      x_range: [-2, 4, 1]
+      y_range: [0, 10, 2]
+
+  # Trig & Pre-Calculus
+  - id: 33
+    name: "Right Triangle Trigonometry (SOH CAH TOA)"
+    archetype: geometry
+    keywords: ["soh cah toa", "trigonometry", "right triangle trig", "sine cosine tangent"]
+    params:
+      shape: "Triangle"
+      radius: 2.5
+      formula: "\\sin\\theta = \\frac{\\text{opp}}{\\text{hyp}}"
+      calculation: "\\cos\\theta = \\frac{\\text{adj}}{\\text{hyp}}, \\tan\\theta = \\frac{\\text{opp}}{\\text{adj}}"
+
+  - id: 34
+    name: "The Unit Circle"
+    archetype: unit_circle
+    keywords: ["unit circle", "angle on unit circle", "trig unit circle"]
+    params:
+      start_angle: 0
+      end_angle: 360
+
+  - id: 35
+    name: "Graphing Sine and Cosine Waves"
+    archetype: graphing
+    keywords: ["sine wave", "cosine wave", "graph sine", "graph cosine", "sin cos graph"]
+    params:
+      formula: "np.sin(x)"
+      label: "y = \\sin(x)"
+      x_range: [-7, 7, 1]
+      y_range: [-2, 2, 1]
+
+  - id: 36
+    name: "Logarithms"
+    archetype: equation
+    keywords: ["logarithm", "log", "log base", "inverse exponential"]
+    params:
+      title: "Logarithms"
+      steps: ["\\log_b(x) = y \\Leftrightarrow b^y = x", "\\log_2(8) = 3 \\Leftrightarrow 2^3 = 8", "\\ln(e) = 1"]
+
+  - id: 37
+    name: "Complex Numbers and the Complex Plane"
+    archetype: graphing
+    keywords: ["complex number", "imaginary", "complex plane", "real imaginary axis"]
+    params:
+      formula: "0"
+      label: "a + bi"
+      x_range: [-3, 3, 1]
+      y_range: [-3, 3, 1]
+
+  - id: 38
+    name: "Vector Addition (Tip-to-Tail)"
+    archetype: equation
+    keywords: ["vector", "vector addition", "tip to tail", "resultant"]
+    params:
+      title: "Vector Addition"
+      steps: ["\\vec{a} = (3, 2)", "\\vec{b} = (1, 4)", "\\vec{a} + \\vec{b} = (4, 6)"]
+
+  - id: 39
+    name: "Matrix Multiplication"
+    archetype: equation
+    keywords: ["matrix", "matrix multiplication", "matrices"]
+    params:
+      title: "Matrix Multiplication"
+      steps: ["A = \\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix}", "B = \\begin{bmatrix} 5 & 6 \\\\ 7 & 8 \\end{bmatrix}", "AB = \\begin{bmatrix} 19 & 22 \\\\ 43 & 50 \\end{bmatrix}"]
+
+  - id: 40
+    name: "Conic Sections (Ellipses & Hyperbolas)"
+    archetype: graphing
+    keywords: ["conic", "ellipse", "hyperbola", "conic section"]
+    params:
+      formula: "np.sqrt(max(0, 4 - (x**2)/4))"
+      label: "\\frac{x^2}{4} + y^2 = 1"
+      x_range: [-3, 3, 1]
+      y_range: [-2, 2, 1]
+
+  - id: 41
+    name: "Arithmetic & Geometric Sequences"
+    archetype: sequence
+    keywords: ["arithmetic sequence", "geometric sequence", "pattern sequence", "series"]
+    params:
+      terms: ["1", "3", "5", "7", "9"]
+      title: "Arithmetic Sequence"
+      pattern: "a_n = 2n - 1"
+
+  # Calculus & Beyond
+  - id: 42
+    name: "Limits (Graphical Approach)"
+    archetype: graphing
+    keywords: ["limit", "limits graph", "approaching", "graphical limit"]
+    params:
+      formula: "(x**2 - 1)/(x - 1) if x != 1 else 2"
+      label: "\\lim_{x \\to 1} \\frac{x^2-1}{x-1} = 2"
+      x_range: [-1, 3, 1]
+      y_range: [0, 4, 1]
+
+  - id: 43
+    name: "Limits (Algebraic/Epsilon-Delta)"
+    archetype: equation
+    keywords: ["epsilon delta", "algebraic limit", "limit algebraic"]
+    params:
+      title: "Algebraic Limits"
+      steps: ["\\lim_{x \\to 1} \\frac{x^2-1}{x-1}", "= \\lim_{x \\to 1} \\frac{(x-1)(x+1)}{x-1}", "= \\lim_{x \\to 1} (x+1)", "= 2"]
+
+  - id: 44
+    name: "The Derivative (Secant to Tangent)"
+    archetype: graphing
+    keywords: ["derivative", "tangent line", "secant line", "rate of change"]
+    params:
+      formula: "x**2"
+      label: "f(x) = x^2, \\; f'(x) = 2x"
+      x_range: [-3, 3, 1]
+      y_range: [-1, 9, 1]
+
+  - id: 45
+    name: "The Power Rule & Chain Rule"
+    archetype: equation
+    keywords: ["power rule", "chain rule", "differentiation rules"]
+    params:
+      title: "Power & Chain Rule"
+      steps: ["\\frac{d}{dx}[x^n] = nx^{n-1}", "\\frac{d}{dx}[x^3] = 3x^2", "\\frac{d}{dx}[(2x+1)^3] = 3(2x+1)^2 \\cdot 2"]
+
+  - id: 46
+    name: "Optimization (Finding Minima/Maxima)"
+    archetype: graphing
+    keywords: ["optimization", "maximum", "minimum", "critical point"]
+    params:
+      formula: "x**3 - 3*x"
+      label: "f(x) = x^3 - 3x"
+      x_range: [-3, 3, 1]
+      y_range: [-3, 3, 1]
+
+  - id: 47
+    name: "The Integral (Riemann Sums)"
+    archetype: calculus
+    keywords: ["integral", "riemann sum", "area under curve", "definite integral"]
+    params:
+      func: "x**2"
+      a: 0
+      b: 2
+      n_rects: 6
+      label: "\\int_0^2 x^2 \\, dx = \\frac{8}{3}"
+
+  - id: 48
+    name: "The Fundamental Theorem of Calculus"
+    archetype: equation
+    keywords: ["fundamental theorem", "ftc", "antiderivative"]
+    params:
+      title: "Fundamental Theorem of Calculus"
+      steps: ["\\int_a^b f(x)\\,dx = F(b) - F(a)", "\\int_0^2 x^2\\,dx = \\left[\\frac{x^3}{3}\\right]_0^2", "= \\frac{8}{3} - 0 = \\frac{8}{3}"]
+
+  - id: 49
+    name: "Solids of Revolution (Disk Method)"
+    archetype: equation
+    keywords: ["solid of revolution", "disk method", "washer method", "volume integral"]
+    params:
+      title: "Disk Method"
+      steps: ["V = \\pi \\int_a^b [f(x)]^2\\,dx", "V = \\pi \\int_0^2 x^4\\,dx", "V = \\pi \\left[\\frac{x^5}{5}\\right]_0^2 = \\frac{32\\pi}{5}"]
+
+  - id: 50
+    name: "Intro to Differential Equations"
+    archetype: graphing
+    keywords: ["differential equation", "slope field", "ode", "dy/dx"]
+    params:
+      formula: "x"
+      label: "\\frac{dy}{dx} = x \\;\\text{(Slope Field)}"
+      x_range: [-3, 3, 1]
+      y_range: [-4, 4, 1]

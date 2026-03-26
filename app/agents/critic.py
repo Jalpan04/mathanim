@@ -1,37 +1,39 @@
 from app.agents.state import GraphState
-from langchain_core.messages import SystemMessage, HumanMessage
-from langchain_community.chat_models import ChatOllama
-import os
+from app.services.validator import RenderValidator
 
-llm = ChatOllama(model="gemma3:12b", temperature=0.1)
 
 def critic_node(state: GraphState):
     """
     Node D: Critic.
-    Reviews the code for logic errors or hallucinations before execution.
+    Validates the generated Manim code before rendering.
+    Uses RenderValidator for Python AST, LaTeX, and size checks.
+    On failure, returns error_log so the developer retries.
     """
     print("---NODE D: CRITIC---")
-    code = state['manim_code']
-    
-    # 1. HARD Syntax Check (Compiler Level)
-    import ast
-    try:
-        ast.parse(code)
-    except SyntaxError as e:
-        error_msg = f"SyntaxError at line {e.lineno}: {e.msg}"
-        print(f"Critic: Caught syntax error! {error_msg}")
-        return {"error_log": f"REJECTED: Your code has a Python Syntax Error. {error_msg}. Please fix it."}
-    except Exception as e:
-        print(f"Critic: Caught parsing error! {e}")
-        return {"error_log": f"REJECTED: Code failed to parse. {e}"}
+    code = state.get("manim_code", "")
+    attempt_count = state.get("attempt_count", 0)
 
-    # 2. Semantic/Logic Check (LLM Level) - DISABLED FOR SPEED
-    # We rely on the Developer to get the logic right. 
-    # The Syntax check above guarantees it won't crash the renderer.
-    
-    print("Critic: Syntax is valid. Skipping LLM logic check for speed.")
-    return {"error_log": None}
+    if not code or not code.strip():
+        return {
+            "error_log": "REJECTED: Developer produced empty code.",
+            "attempt_count": attempt_count + 1
+        }
 
-    # prompt = f"""..."""
-    # response = llm.invoke(...)
-    # ...
+    # Run pre-flight validation
+    errors = RenderValidator.validate(code)
+
+    if errors:
+        error_summary = " | ".join(errors)
+        print(f"Critic: Found {len(errors)} error(s): {error_summary}")
+        return {
+            "error_log": f"REJECTED: {error_summary}",
+            "attempt_count": attempt_count + 1,
+            "render_errors": errors,
+        }
+
+    print("Critic: Code passed all validation checks.")
+    return {
+        "error_log": None,
+        "render_errors": [],
+        "attempt_count": attempt_count,
+    }
