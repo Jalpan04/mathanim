@@ -1,5 +1,7 @@
 # MathAnim
 
+![GitHub top language](https://img.shields.io/github/languages/top/Jalpan04/mathanim) ![GitHub repo size](https://img.shields.io/github/repo-size/Jalpan04/mathanim) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 **MathAnim** is an autonomous visualization engine that transforms static mathematical problems into dynamic, step-by-step video tutorials using Manim.
 
 ## Architecture
