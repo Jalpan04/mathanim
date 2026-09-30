@@ -5,42 +5,15 @@ const API_URL = (window.location.origin && window.location.origin.startsWith("ht
 let currentTaskId = null;
 let pollInterval = null;
 let lastGeneratedCode = "";
-let stageTimer = null;
-let currentSteps = [];
 
 // DOM Helper
 const $ = (id) => document.getElementById(id);
 
-// Initial default steps matching MathAnim Studio.html
-const defaultSteps = [
-  [
-    '2x + 5 = 15', 
-    'Start with the equation.',
-    'Isolate the variable term (2x) by undoing addition first.'
-  ],
-  [
-    '2x = 10', 
-    'Subtract 5 from both sides.',
-    'Whatever operation is applied to one side must be applied to the other to preserve equality: (2x + 5) - 5 = 15 - 5.'
-  ],
-  [
-    'x = 5', 
-    'Divide both sides by 2.',
-    'Since x is multiplied by 2, perform the inverse operation (division by 2) to solve for x: 10 / 2 = 5.'
-  ],
-  [
-    '2(5) + 5 = 15', 
-    'Verify substitution result.',
-    'Substitute x = 5 back into the original equation: 2(5) + 5 = 10 + 5 = 15. The solution holds true.'
-  ]
-];
-
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", () => {
-  renderStepBreakdown(defaultSteps);
   loadSystemStatus();
   loadExamples();
-  playStageAnimation();
+  resetToIdle();
 
   // Button actions
   $('go').onclick = handleRender;
@@ -53,60 +26,14 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Render the Step Breakdown drawer and Stage text elements
-function renderStepBreakdown(stepsData) {
-  currentSteps = stepsData;
-  const stageSeq = $('stageSequence');
-  const stepsBlock = $('steps');
-
-  stageSeq.innerHTML = "";
-  stepsBlock.innerHTML = "";
-
-  stepsData.forEach((s, i) => {
-    // Stage div
-    const d = document.createElement('div');
-    d.textContent = s[0];
-    stageSeq.appendChild(d);
-
-    // Step breakdown row
-    const row = document.createElement('div');
-    row.className = 'step-row';
-
-    const idxStr = (i + 1) < 10 ? `0${i + 1}` : `${i + 1}`;
-    let html = `<span class="step-idx">${idxStr}</span>` +
-               `<div class="step-body">` +
-                 `<div class="step-math">${escapeHtml(s[0])}</div>` +
-                 `<div class="step-txt">${escapeHtml(s[1])}</div>`;
-
-    if (s[2]) {
-      html += `<div class="step-note">${escapeHtml(s[2])}</div>`;
-    }
-
-    html += `</div>`;
-    row.innerHTML = html;
-    stepsBlock.appendChild(row);
-  });
-}
-
-function showStageStep(n) {
-  const d = $('stageSequence').children;
-  for (let i = 0; i < currentSteps.length; i++) {
-    if (d[i]) {
-      d[i].className = i < n ? 'on' : i === n ? 'cur' : '';
-    }
-  }
-}
-
-function playStageAnimation() {
-  clearInterval(stageTimer);
-  let i = 0;
-  showStageStep(-1);
-  stageTimer = setInterval(() => {
-    showStageStep(i);
-    i++;
-    if (i >= currentSteps.length) clearInterval(stageTimer);
-  }, 2000);
-  setTimeout(() => { showStageStep(0); i = 1; }, 50);
+function resetToIdle() {
+  $('stageIdle').style.display = 'flex';
+  $('stageLoading').style.display = 'none';
+  const video = $('resultVideo');
+  video.pause();
+  video.style.display = 'none';
+  $('resultSource').src = "";
+  $('pipelineTracker').style.display = 'none';
 }
 
 // Fetch active system model and hardware status
@@ -152,14 +79,32 @@ async function loadExamples() {
 // Submit Problem
 async function handleRender() {
   const problem = $('q').value.trim();
-  if (!problem) return;
+  if (!problem) {
+    $('q').focus();
+    return;
+  }
 
   hideError();
   setLoading(true);
-  resetVideo();
 
+  // Transition stage into active loading state
+  $('stageIdle').style.display = 'none';
+  const video = $('resultVideo');
+  video.pause();
+  video.style.display = 'none';
+  $('resultSource').src = '';
+
+  $('stageLoading').style.display = 'flex';
+  $('loadingPrompt').innerText = problem;
+  $('loadingStatus').innerText = 'Analyzing mathematical parameters & coordinates...';
+
+  // Progress tracker
   $('pipelineTracker').style.display = 'block';
-  updateProgress(15, "Analyzing problem and geometry...");
+  updateProgress(15, 'Initiating mathematical analysis...');
+
+  // Update drawers
+  $('steps').innerHTML = '<div class="empty-state">Computing mathematical proof and step-by-step breakdown...</div>';
+  $('codeDisplay').innerText = '# Synthesizing visual animation script...';
 
   try {
     const res = await fetch(`${API_URL}/solve`, {
@@ -180,7 +125,7 @@ async function handleRender() {
   } catch (err) {
     showError(err.message || "Failed to submit request.");
     setLoading(false);
-    $('pipelineTracker').style.display = 'none';
+    resetToIdle();
   }
 }
 
@@ -208,9 +153,9 @@ function pollStatus(taskId) {
 
         if (data.math_solution) {
           const parsed = parseSolutionToSteps(data.math_solution);
-          if (parsed && parsed.length > 0) {
-            renderStepBreakdown(parsed);
-          }
+          renderStepBreakdown(parsed);
+        } else {
+          $('steps').innerHTML = '<div class="empty-state">Completed successfully.</div>';
         }
 
         if (data.video_url) {
@@ -219,7 +164,7 @@ function pollStatus(taskId) {
 
         setTimeout(() => {
           $('pipelineTracker').style.display = 'none';
-        }, 1500);
+        }, 1200);
 
         setLoading(false);
       } else if (data.status === "failed") {
@@ -230,7 +175,7 @@ function pollStatus(taskId) {
           $('codeDisplay').innerText = data.code;
         }
         setLoading(false);
-        $('pipelineTracker').style.display = 'none';
+        resetToIdle();
       } else {
         // Dynamic progress estimation
         let percent = 35;
@@ -247,6 +192,7 @@ function pollStatus(taskId) {
           text = "Finalizing video encode...";
         }
 
+        $('loadingStatus').innerText = text;
         updateProgress(percent, text);
       }
     } catch (e) {
@@ -265,10 +211,9 @@ function updateProgress(percent, text) {
 function displayVideo(videoUrl) {
   const fullUrl = videoUrl.startsWith("http") ? videoUrl : `${API_URL}/${videoUrl}`;
   const video = $('resultVideo');
-  const stageSeq = $('stageSequence');
 
-  clearInterval(stageTimer);
-  stageSeq.style.display = "none";
+  $('stageIdle').style.display = 'none';
+  $('stageLoading').style.display = 'none';
   video.style.display = "block";
 
   $('resultSource').src = fullUrl;
@@ -281,23 +226,11 @@ function displayVideo(videoUrl) {
   dl.style.display = "inline-flex";
 }
 
-function resetVideo() {
-  const video = $('resultVideo');
-  const stageSeq = $('stageSequence');
-  video.pause();
-  video.style.display = "none";
-  $('resultSource').src = "";
-  stageSeq.style.display = "flex";
-  playStageAnimation();
-}
-
 function handleReplay() {
   const video = $('resultVideo');
   if (video.style.display !== "none" && $('resultSource').src) {
     video.currentTime = 0;
     video.play();
-  } else {
-    playStageAnimation();
   }
 }
 
@@ -337,6 +270,36 @@ async function handleRating(rating) {
   }
 }
 
+// Render the Step Breakdown drawer
+function renderStepBreakdown(stepsData) {
+  const stepsBlock = $('steps');
+  stepsBlock.innerHTML = "";
+
+  if (!stepsData || stepsData.length === 0) {
+    stepsBlock.innerHTML = '<div class="empty-state">Step-by-step mathematical reasoning and construction steps will appear here upon rendering.</div>';
+    return;
+  }
+
+  stepsData.forEach((s, i) => {
+    const row = document.createElement('div');
+    row.className = 'step-row';
+
+    const idxStr = (i + 1) < 10 ? `0${i + 1}` : `${i + 1}`;
+    let html = `<span class="step-idx">${idxStr}</span>` +
+               `<div class="step-body">` +
+                 `<div class="step-math">${escapeHtml(s[0])}</div>` +
+                 `<div class="step-txt">${escapeHtml(s[1])}</div>`;
+
+    if (s[2]) {
+      html += `<div class="step-note">${escapeHtml(s[2])}</div>`;
+    }
+
+    html += `</div>`;
+    row.innerHTML = html;
+    stepsBlock.appendChild(row);
+  });
+}
+
 // Parse mathematical solution text into structured steps
 function parseSolutionToSteps(text) {
   if (!text) return null;
@@ -348,7 +311,6 @@ function parseSolutionToSteps(text) {
     const numMatch = line.match(/^(?:(?:Step\s*)?(\d+)[.:]\s*|(\d+)\.\s*)(.*)/i);
     if (numMatch) {
       const stepContent = numMatch[3];
-      // Split math and explanation if colon or equal sign exists
       let mathPart = stepContent;
       let notePart = "";
       if (stepContent.includes(":")) {
@@ -368,7 +330,7 @@ function parseSolutionToSteps(text) {
 
   if (steps.length > 0) return steps;
 
-  // Fallback: chunk lines into triplets
+  // Fallback: chunk lines into individual steps
   for (let i = 0; i < Math.min(lines.length, 5); i++) {
     steps.push([
       lines[i],

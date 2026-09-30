@@ -36,7 +36,7 @@
     <aside>
       <div>
         <div class="section-label">Input Problem</div>
-        <textarea id="q" placeholder="Type a mathematical problem...">Solve 2x + 5 = 15</textarea>
+        <textarea id="q" placeholder="Type a mathematical problem (e.g. Construct a rhombus BEND where BN = 5.6 cm and DE = 6.5 cm)..."></textarea>
         <button class="primary-btn" id="go">Render Sequence</button>
         <div class="error-banner" id="errorBanner"></div>
 
@@ -54,9 +54,7 @@
       <div>
         <div class="section-label">Quick Examples</div>
         <div id="examplesContainer">
-          <button class="preset-chip">Solve 2x + 5 = 15</button>
-          <button class="preset-chip">Area of a circle with radius 3</button>
-          <button class="preset-chip">Integral of x^2 from 0 to 2</button>
+          <!-- Dynamically loaded from /examples -->
         </div>
       </div>
     </aside>
@@ -64,7 +62,16 @@
     <main>
       <div class="viewport-card">
         <div class="stage" id="stage">
-          <div class="stage-sequence" id="stageSequence"></div>
+          <div class="stage-idle" id="stageIdle">
+            <div class="stage-idle-badge">M</div>
+            <div class="stage-idle-title">Mathematical Animation Studio</div>
+            <div class="stage-idle-desc">Select a quick preset or type a problem to synthesize and render a step-by-step mathematical animation.</div>
+          </div>
+          <div class="stage-loading" id="stageLoading" style="display:none;">
+            <div class="stage-loading-pulse"></div>
+            <div class="stage-loading-prompt" id="loadingPrompt">Synthesizing Animation...</div>
+            <div class="stage-loading-status" id="loadingStatus">Analyzing mathematical parameters & coordinates...</div>
+          </div>
           <video id="resultVideo" controls playsinline>
             <source id="resultSource" src="" type="video/mp4" />
             Your browser does not support HTML5 video playback.
@@ -91,7 +98,9 @@
       <details open id="stepDrawer">
         <summary><span>Step Breakdown</span><span class="chevron">↓</span></summary>
         <div class="drawer-inner">
-          <div class="solution-block" id="steps"></div>
+          <div class="solution-block" id="steps">
+            <div class="empty-state">Step-by-step mathematical reasoning and construction steps will appear here upon rendering.</div>
+          </div>
         </div>
       </details>
 
@@ -101,16 +110,7 @@
           <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
             <button class="sec-btn" id="copyBtn">Copy Code</button>
           </div>
-          <pre><code id="codeDisplay">from manim import *
-
-class MathSolution(Scene):
-    def construct(self):
-        eq1 = MathTex("2x + 5 = 15")
-        self.play(Write(eq1))
-        eq2 = MathTex("2x = 10")
-        self.play(Transform(eq1, eq2))
-        eq3 = MathTex("x = 5")
-        self.play(Transform(eq1, eq3))</code></pre>
+          <pre><code id="codeDisplay"># Python Manim script will appear here after generation...</code></pre>
         </div>
       </details>
     </main>

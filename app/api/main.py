@@ -83,7 +83,7 @@ async def get_example_problems():
         {"category": "Matrices", "prompt": "Calculate the determinant of matrix [[3, 2], [1, 4]]"},
         {"category": "Sequences", "prompt": "Find the 10th term and sum of first 10 terms of AP: 2, 5, 8, 11..."},
         {"category": "System", "prompt": "Solve system of equations 2x + y = 7 and x - y = 1"},
-        {"category": "Algebra", "prompt": "Solve 2x + 5 = 15 step by step"},
+        {"category": "Algebra", "prompt": "Solve linear equation 3x + 7 = 22 step by step"},
         {"category": "Graphing", "prompt": "Graph y = x^2 - 4 with axes and highlights"},
         {"category": "Geometry", "prompt": "Calculate and visualize the area of a circle with radius 3"},
         {"category": "Calculus", "prompt": "Find derivative and tangent line of y = x^2 at x = 2"},

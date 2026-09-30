@@ -287,34 +287,93 @@ main {
   overflow: hidden;
 }
 
-.stage-sequence {
+
+.stage-idle {
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 14px;
-  width: 100%;
+  gap: 12px;
+  text-align: center;
   height: 100%;
+  width: 100%;
 }
 
-.stage-sequence div {
-  font-family: var(--font-serif);
-  font-size: clamp(20px, 3vw, 32px);
-  color: var(--text-main);
-  opacity: 0;
-  transform: translateY(6px);
-  transition: all 0.3s ease;
-}
-
-.stage-sequence div.on {
-  opacity: 0.3;
-  transform: none;
-}
-
-.stage-sequence div.cur {
-  opacity: 1;
-  transform: none;
+.stage-idle-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   color: var(--accent-gold);
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.stage-idle-title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+.stage-idle-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 420px;
+  line-height: 1.5;
+}
+
+.stage-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+}
+
+.stage-loading-pulse {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent-gold);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.stage-loading-prompt {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--accent-gold);
+  max-width: 520px;
+  line-height: 1.35;
+  padding: 0 16px;
+}
+
+.stage-loading-status {
+  font-size: 13px;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.empty-state {
+  padding: 18px 0;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-style: italic;
+}
+
 
 #resultVideo {
   display: none;
