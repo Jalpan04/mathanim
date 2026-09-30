@@ -35,15 +35,15 @@ class Settings:
     # "native" executes local manim on the host (fast, no Docker required)
     # "docker" executes inside mathanim-renderer container
     RENDER_MODE: str = os.getenv("RENDER_MODE", "native").lower()
-    MANIM_QUALITY: str = os.getenv("MANIM_QUALITY", "-ql")  # -ql (480p15), -qm (720p30), -qh (1080p60)
+    MANIM_QUALITY: str = os.getenv("MANIM_QUALITY", "-qh")  # -qh (1080p60 Full HD), -qm (720p30), -ql (480p15)
     RENDER_TIMEOUT: int = int(os.getenv("RENDER_TIMEOUT", "180"))
 
     # Celery / Redis
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
     # Storage & Pruning Settings
-    MAX_STORED_VIDEOS: int = int(os.getenv("MAX_STORED_VIDEOS", "30"))
-    MAX_STORAGE_MB: int = int(os.getenv("MAX_STORAGE_MB", "500"))
+    MAX_STORED_VIDEOS: int = int(os.getenv("MAX_STORED_VIDEOS", "50"))
+    MAX_STORAGE_MB: int = int(os.getenv("MAX_STORAGE_MB", "2000"))
     CLEANUP_INTERMEDIATES: bool = os.getenv("CLEANUP_INTERMEDIATES", "true").lower() in ("true", "1", "yes")
 
 

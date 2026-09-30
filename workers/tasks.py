@@ -131,11 +131,13 @@ def _render_code(code: str, problem_prompt: str, task_id: str) -> Dict[str, Any]
                     "code": code
                 }
 
-            # Locate the generated MP4
+            # Locate the generated MP4 (excluding partial chunks, preferring highest resolution)
             expected_dir = settings.VIDEOS_DIR / f"scene_{task_id}"
-            mp4_files = list(expected_dir.glob(f"**/{scene_name}.mp4")) or list(expected_dir.glob("**/*.mp4"))
+            candidates = list(expected_dir.glob(f"**/{scene_name}.mp4")) or list(expected_dir.glob("**/*.mp4"))
+            mp4_files = [f for f in candidates if "partial_movie_files" not in str(f)]
 
             if mp4_files:
+                mp4_files.sort(key=lambda p: ("1080p" in str(p), "720p" in str(p), p.stat().st_mtime), reverse=True)
                 rel_path = mp4_files[0].relative_to(settings.ROOT_DIR).as_posix()
                 print(f"Video generated successfully at: {rel_path}")
 
@@ -187,9 +189,24 @@ def _render_code(code: str, problem_prompt: str, task_id: str) -> Dict[str, Any]
         if result.returncode != 0:
             return {"status": "failed", "error": result.stderr, "stdout": result.stdout}
 
+        # Locate the generated MP4
+        expected_dir = settings.VIDEOS_DIR / f"scene_{task_id}"
+        candidates = list(expected_dir.glob(f"**/{scene_name}.mp4")) or list(expected_dir.glob("**/*.mp4"))
+        mp4_files = [f for f in candidates if "partial_movie_files" not in str(f)]
+        if mp4_files:
+            mp4_files.sort(key=lambda p: ("1080p" in str(p), "720p" in str(p), p.stat().st_mtime), reverse=True)
+            rel_path = mp4_files[0].relative_to(settings.ROOT_DIR).as_posix()
+        else:
+            rel_path = f"media/videos/scene_{task_id}/1080p60/{scene_name}.mp4"
+
+        # Manage disk space
+        from app.services.pruner import cleanup_task_intermediates, prune_old_media
+        cleanup_task_intermediates(task_id)
+        prune_old_media()
+
         return {
             "status": "completed",
-            "video_path": f"media/videos/scene_{task_id}/480p15/{scene_name}.mp4",
+            "video_path": rel_path,
             "stdout": result.stdout,
             "code": code,
             "prompt": problem_prompt
