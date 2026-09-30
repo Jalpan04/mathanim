@@ -16,24 +16,10 @@
       <div class="brand-badge">M</div>
       <span class="brand-title">MathAnim Studio</span>
     </div>
-
-    <div class="header-badges">
-      <div class="badge badge-gpu">
-        <span class="badge-dot"></span>
-        <span>GPU Accelerated</span>
-      </div>
-      <div class="badge badge-model">
-        <span class="badge-dot" style="background:#4ade80;"></span>
-        <span id="modelBadge">Loading AI...</span>
-      </div>
-      <div class="badge badge-engine">
-        <span>Manim Native</span>
-      </div>
-    </div>
   </header>
 
   <div class="app-grid">
-    <aside>
+    <aside class="sidebar-left">
       <div>
         <div class="section-label">Input Problem</div>
         <textarea id="q" placeholder="Type a mathematical problem (e.g. Construct a rhombus BEND where BN = 5.6 cm and DE = 6.5 cm)..."></textarea>
@@ -50,10 +36,9 @@
           </div>
         </div>
       </div>
-
     </aside>
 
-    <main>
+    <main class="viewport-main">
       <div class="viewport-card">
         <div class="stage" id="stage">
           <div class="stage-idle" id="stageIdle">
@@ -88,15 +73,6 @@
         </div>
       </div>
 
-      <details open id="stepDrawer">
-        <summary><span>Step Breakdown</span><span class="chevron">↓</span></summary>
-        <div class="drawer-inner">
-          <div class="solution-block" id="steps">
-            <div class="empty-state">Step-by-step mathematical reasoning and construction steps will appear here upon rendering.</div>
-          </div>
-        </div>
-      </details>
-
       <details id="codeDrawer">
         <summary><span>Manim Code</span><span class="chevron">↓</span></summary>
         <div class="drawer-inner">
@@ -107,6 +83,17 @@
         </div>
       </details>
     </main>
+
+    <aside class="sidebar-right">
+      <div class="sidebar-right-header">
+        <span class="section-label" style="margin-bottom:0;">Step Breakdown</span>
+      </div>
+      <div class="steps-scroll-panel">
+        <div class="solution-block" id="steps">
+          <div class="empty-state">Step-by-step mathematical reasoning and construction steps will appear here upon rendering.</div>
+        </div>
+      </div>
+    </aside>
   </div>
 
   <script src="/static/script.js"></script>
