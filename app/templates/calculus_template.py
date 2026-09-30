@@ -1,52 +1,35 @@
+# REFERENCE TEMPLATE: Calculus Archetype
+# The LLM should adapt this pattern for integrals, Riemann sums, derivatives.
+# This example shows a Riemann sum for integral of x^2 from 0 to 2.
+
 from manim import *
 import numpy as np
 
 
 class MathScene(Scene):
     def construct(self):
-        # Parameters:
-        # {{ FUNC }}    - Python expression, e.g. "x**2"
-        # {{ A }}       - lower bound, e.g. 0
-        # {{ B }}       - upper bound, e.g. 2
-        # {{ N_RECTS }} - number of Riemann rects, e.g. 6
-        # {{ LABEL }}   - LaTeX label, e.g. r"\int_0^2 x^2 dx"
-
-        func_str = """{{ FUNC }}"""
-        a = {{ A }}
-        b = {{ B }}
-        n_rects = {{ N_RECTS }}
-        label_str = """{{ LABEL }}"""
-
         axes = Axes(
-            x_range=[a - 0.5, b + 0.5, 0.5],
-            y_range=[0, None, 1],
+            x_range=[-0.5, 2.5, 0.5],
+            y_range=[-0.5, 5, 1],
             axis_config={"include_tip": True},
         )
         axes.add_coordinates()
 
         def f(x):
-            return eval(func_str, {"x": x, "np": np, "sin": np.sin, "cos": np.cos})
+            return x**2
 
-        # Riemann rectangles (coarse)
-        rects_coarse = axes.get_riemann_rectangles(
-            lambda x: f(x),
-            x_range=[a, b],
-            dx=(b - a) / n_rects,
-            color=BLUE,
-            fill_opacity=0.6,
-        )
-
-        curve = axes.plot(lambda x: f(x), color=YELLOW)
-        formula = MathTex(label_str, font_size=40).to_edge(UP)
+        curve = axes.plot(f, color=YELLOW)
+        formula = MathTex(r"\int_0^2 x^2 \, dx = \frac{8}{3}", font_size=40).to_edge(UP)
 
         self.play(Create(axes), Write(formula))
         self.wait(0.5)
 
-        # Show Riemann rects
-        self.play(Create(rects_coarse), run_time=1.5)
+        rects = axes.get_riemann_rectangles(
+            curve, x_range=[0, 2], dx=0.33, color=BLUE, fill_opacity=0.6
+        )
+        self.play(Create(rects), run_time=1.5)
         self.wait(1)
 
-        # Refine to smooth shaded area
-        filled_area = axes.get_area(curve, x_range=[a, b], color=BLUE, opacity=0.4)
-        self.play(Create(curve), Transform(rects_coarse, filled_area), run_time=2)
+        filled_area = axes.get_area(curve, x_range=[0, 2], color=BLUE, opacity=0.4)
+        self.play(Create(curve), Transform(rects, filled_area), run_time=2)
         self.wait(2)

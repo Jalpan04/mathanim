@@ -1,33 +1,28 @@
+# REFERENCE TEMPLATE: Graphing Archetype
+# The LLM should adapt this pattern to plot any user-specified function(s).
+# This example plots y = x^2. Adapt formula, ranges, labels to the user's question.
+
 from manim import *
+import numpy as np
+
 
 class MathScene(Scene):
     def construct(self):
-        # Parameters to be replaced by the router
-        # {{ FORMULA }} - e.g. "x**2"
-        # {{ X_RANGE }} - e.g. "[-3, 3, 1]"
-        # {{ Y_RANGE }} - e.g. "[-3, 3, 1]"
-        # {{ LABEL }} - e.g. "f(x) = x^2"
-        
-        formula_str = """{{ FORMULA }}"""
-        label_str = """{{ LABEL }}"""
-        
         axes = Axes(
-            x_range={{ X_RANGE }},
-            y_range={{ Y_RANGE }},
-            axis_config={"include_tip": True}
+            x_range=[-5, 5, 1],
+            y_range=[-5, 5, 1],
+            axis_config={"include_tip": True},
         )
         axes.add_coordinates()
-        
-        # Define the function
-        import numpy as np
-        # Need to handle potential issues with certain functions
-        func = axes.plot(lambda x: eval(formula_str, {"x": x, "np": np, "sin": np.sin, "cos": np.cos, "tan": np.tan, "exp": np.exp, "log": np.log, "sqrt": np.sqrt, "pi": np.pi}), color=BLUE)
-        
-        # Label for the function
-        label = MathTex(label_str, color=BLUE).next_to(axes, UP, buff=0.5).to_edge(RIGHT)
-        
-        # Animation
-        self.play(Create(axes))
-        self.wait(1)
-        self.play(Create(func), Write(label), run_time=2)
-        self.wait(2)
+
+        title = Text("y = x^2", font_size=32).to_edge(UP)
+        self.play(Write(title), Create(axes))
+        self.wait(0.5)
+
+        curve = axes.plot(lambda x: x**2, color=BLUE, use_smoothing=True)
+        curve_label = MathTex(r"y = x^2", color=BLUE, font_size=28).next_to(
+            curve.get_end(), RIGHT, buff=0.2
+        )
+
+        self.play(Create(curve), Write(curve_label), run_time=2)
+        self.wait(3)

@@ -2,12 +2,10 @@ from app.agents.state import GraphState
 from app.services.validator import RenderValidator
 
 
-def critic_node(state: GraphState):
+def critic_node(state: GraphState) -> dict:
     """
     Node D: Critic.
-    Validates the generated Manim code before rendering.
-    Uses RenderValidator for Python AST, LaTeX, and size checks.
-    On failure, returns error_log so the developer retries.
+    Validates and auto-repairs the generated Manim code before rendering.
     """
     print("---NODE D: CRITIC---")
     code = state.get("manim_code", "")
@@ -19,6 +17,9 @@ def critic_node(state: GraphState):
             "attempt_count": attempt_count + 1
         }
 
+    # Run auto-corrections first
+    code = RenderValidator.autofix(code)
+
     # Run pre-flight validation
     errors = RenderValidator.validate(code)
 
@@ -26,6 +27,7 @@ def critic_node(state: GraphState):
         error_summary = " | ".join(errors)
         print(f"Critic: Found {len(errors)} error(s): {error_summary}")
         return {
+            "manim_code": code,
             "error_log": f"REJECTED: {error_summary}",
             "attempt_count": attempt_count + 1,
             "render_errors": errors,
@@ -33,6 +35,7 @@ def critic_node(state: GraphState):
 
     print("Critic: Code passed all validation checks.")
     return {
+        "manim_code": code,
         "error_log": None,
         "render_errors": [],
         "attempt_count": attempt_count,

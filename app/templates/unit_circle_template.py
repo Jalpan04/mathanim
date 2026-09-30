@@ -1,72 +1,52 @@
+# REFERENCE TEMPLATE: Unit Circle Archetype
+# The LLM should adapt this pattern for unit circle, trig angle visualizations.
+# This example draws the unit circle and traces sin/cos projections.
+
 from manim import *
 import numpy as np
 
 
 class MathScene(Scene):
     def construct(self):
-        # Parameters:
-        # {{ START_ANGLE }} - start in degrees, e.g. 0
-        # {{ END_ANGLE }}   - end in degrees, e.g. 90
-
-        start_deg = {{ START_ANGLE }}
-        end_deg = {{ END_ANGLE }}
-
-        # Build axes
-        axes = Axes(
-            x_range=[-1.5, 1.5, 0.5],
-            y_range=[-1.5, 1.5, 0.5],
-            x_length=6,
-            y_length=6,
-            axis_config={"include_tip": True},
-        ).to_edge(LEFT)
-        axes.add_coordinates()
-
-        # Draw unit circle
-        circle = Circle(radius=axes.x_length / (1.5 - (-1.5)), color=BLUE)
-        circle.move_to(axes.c2p(0, 0))
-
         title = Text("The Unit Circle", font_size=34).to_edge(UP)
-        self.play(Write(title), Create(axes), Create(circle))
-        self.wait(1)
+        self.play(Write(title))
+        self.wait(0.5)
 
-        # Angle tracker
-        angle_tracker = ValueTracker(start_deg * DEGREES)
-
-        # Dynamic dot on circle
-        radius_num = axes.x_length / (1.5 - (-1.5))
-        origin = axes.c2p(0, 0)
-
-        def get_dot():
-            ang = angle_tracker.get_value()
-            x = np.cos(ang) * radius_num
-            y = np.sin(ang) * radius_num
-            return Dot(np.array([origin[0] + x, origin[1] + y, 0]), color=YELLOW)
-
-        dot = always_redraw(get_dot)
-
-        def get_radius_line():
-            ang = angle_tracker.get_value()
-            x = np.cos(ang) * radius_num
-            y = np.sin(ang) * radius_num
-            return Line(origin, np.array([origin[0] + x, origin[1] + y, 0]), color=GREEN)
-
-        radius_line = always_redraw(get_radius_line)
-
-        # cos/sin label
-        cos_sin_label = always_redraw(lambda: MathTex(
-            r"(\cos\theta, \sin\theta)",
-            font_size=30,
-            color=YELLOW
-        ).next_to(get_dot(), UR, buff=0.15))
-
-        self.play(Create(dot), Create(radius_line))
-        self.play(FadeIn(cos_sin_label))
-        self.wait(1)
-
-        # Animate angle sweep
-        self.play(
-            angle_tracker.animate.set_value(end_deg * DEGREES),
-            run_time=3,
-            rate_func=linear
+        circle = Circle(radius=2.5, color=WHITE)
+        axes = Axes(
+            x_range=[-3, 3, 1], y_range=[-3, 3, 1],
+            axis_config={"include_tip": False, "stroke_width": 1},
         )
+        self.play(Create(axes), Create(circle))
+        self.wait(0.5)
+
+        angle = ValueTracker(0)
+
+        dot = always_redraw(
+            lambda: Dot(
+                point=circle.point_at_angle(angle.get_value()),
+                color=YELLOW, radius=0.1,
+            )
+        )
+        cos_line = always_redraw(
+            lambda: DashedLine(
+                circle.point_at_angle(angle.get_value()),
+                [circle.point_at_angle(angle.get_value())[0], 0, 0],
+                color=BLUE,
+            )
+        )
+        sin_line = always_redraw(
+            lambda: DashedLine(
+                circle.point_at_angle(angle.get_value()),
+                [0, circle.point_at_angle(angle.get_value())[1], 0],
+                color=RED,
+            )
+        )
+
+        cos_label = MathTex(r"\cos\theta", color=BLUE, font_size=28).to_edge(DOWN + LEFT)
+        sin_label = MathTex(r"\sin\theta", color=RED, font_size=28).next_to(cos_label, RIGHT, buff=1)
+        self.play(Create(dot), Write(cos_label), Write(sin_label))
+        self.add(cos_line, sin_line)
+
+        self.play(angle.animate.set_value(2 * PI), run_time=6, rate_func=linear)
         self.wait(2)

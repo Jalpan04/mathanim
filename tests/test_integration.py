@@ -1,70 +1,62 @@
 import unittest
+import shutil
 import subprocess
-import os
-from pathlib import Path
+import ast
+import sympy
+from app.services.validator import RenderValidator
+from app.services.hybrid_router import route_and_generate
+from app.agents.graph import define_graph
+
 
 class TestMathAnimIntegration(unittest.TestCase):
-    
-    def setUp(self):
-        self.scenes_dir = Path("generated_scenes")
-        self.scenes_dir.mkdir(exist_ok=True)
 
-    def test_01_docker_hello(self):
-        """Test if the Docker container can run basic Python."""
-        filename = "test_hello.py"
-        filepath = self.scenes_dir / filename
-        with open(filepath, "w") as f:
-            f.write("print('Hello Integration!')")
-            
-        cmd = [
-            "docker", "run", "--rm",
-            "-v", f"{self.scenes_dir.resolve()}:/app/scenes",
-            "mathanim-renderer",
-            "python3", f"/app/scenes/{filename}"
-        ]
-        
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-        self.assertEqual(result.returncode, 0)
-        self.assertIn("Hello Integration!", result.stdout)
+    def test_01_manim_environment(self):
+        """Test if the Manim executable is available in the environment."""
+        manim_bin = shutil.which("manim")
+        self.assertIsNotNone(manim_bin, "Manim executable not found in PATH")
+        res = subprocess.run([manim_bin, "--version"], capture_output=True, text=True)
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("Manim Community", res.stdout)
 
-    def test_02_docker_sympy_support(self):
-        """Test if SymPy is installed in the container (Fix Verification)."""
-        filename = "test_sympy.py"
-        filepath = self.scenes_dir / filename
-        with open(filepath, "w") as f:
-            f.write("import sympy; print(f'SymPy Version: {sympy.__version__}')")
-            
-        cmd = [
-            "docker", "run", "--rm",
-            "-v", f"{self.scenes_dir.resolve()}:/app/scenes",
-            "mathanim-renderer",
-            "python3", f"/app/scenes/{filename}"
-        ]
-        
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-        
-        if result.returncode != 0:
-            print(f"\nSymPy Test Failed. Stderr: {result.stderr}")
-            
-        self.assertEqual(result.returncode, 0, "SymPy import failed! Docker image might not be built yet.")
-        self.assertIn("SymPy Version", result.stdout)
+    def test_02_sympy_computations(self):
+        """Test in-process SymPy computation support."""
+        x = sympy.Symbol('x')
+        expr = 2 * x + 5
+        solution = sympy.solve(sympy.Eq(expr, 15), x)
+        self.assertEqual(solution, [5])
 
-    def test_03_critic_syntax_checker(self):
-        """Test the mocked Critic's syntax checking logic."""
-        import ast
-        
-        valid_code = "x = 1\nprint(x)"
-        invalid_code = "x = 1\nprint(x" # Missing paren
-        
-        # Valid should pass
-        try:
-            ast.parse(valid_code)
-        except SyntaxError:
-            self.fail("Valid code raised SyntaxError")
-            
-        # Invalid should look like this
-        with self.assertRaises(SyntaxError):
-            ast.parse(invalid_code)
+    def test_03_critic_autofix_and_validation(self):
+        """Test RenderValidator AST validation and autofix routines."""
+        broken_code = r"""
+from manim import *
+class QuadraticScene(Scene):
+    def construct(self):
+        t = MathTex(r"Title \( x^2 \)")
+        self.play(Write(t))
+"""
+        fixed_code = RenderValidator.autofix(broken_code)
+        self.assertIn("class MathScene", fixed_code)
+        self.assertNotIn(r"\(", fixed_code)
+
+        errors = RenderValidator.validate(fixed_code)
+        self.assertEqual(len(errors), 0, f"Unexpected validation errors: {errors}")
+
+    def test_04_hybrid_router_classification(self):
+        """Test archetype classification on curriculum topics."""
+        _, archetype_graph = route_and_generate("Graph y = x^2 - 4")
+        self.assertEqual(archetype_graph, "graphing")
+
+        _, archetype_geom = route_and_generate("Find the area of a circle with radius 5")
+        self.assertEqual(archetype_geom, "geometry")
+
+        _, archetype_eq = route_and_generate("Solve 3x + 10 = 25 step by step")
+        self.assertEqual(archetype_eq, "equation")
+
+    def test_05_agent_graph_compilation(self):
+        """Test that the LangGraph workflow compiles cleanly."""
+        graph_app = define_graph()
+        self.assertIsNotNone(graph_app)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,37 +1,69 @@
 # MathAnim
 
-![GitHub top language](https://img.shields.io/github/languages/top/Jalpan04/mathanim) ![GitHub repo size](https://img.shields.io/github/repo-size/Jalpan04/mathanim) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+**MathAnim** is an autonomous visualization engine that transforms static mathematical problems into dynamic, step-by-step video tutorials using Manim and an LLM Agent Swarm.
 
-**MathAnim** is an autonomous visualization engine that transforms static mathematical problems into dynamic, step-by-step video tutorials using Manim.
+---
 
 ## Architecture
 
-- **LangGraph Agents**: Orchestrates the reasoning and code generation.
-- **RAG (ChromaDB)**: Retrieves relevant Manim documentation.
-- **Celery + Redis**: Background rendering of videos.
-- **Docker**: Sandboxed execution of generated code.
+- **LangGraph Agents**: Multi-agent swarm (Mathematician, Architect, Developer, Critic) coordinates mathematical solving and animation code synthesis.
+- **RAG & Vector Memory (ChromaDB)**: Retrieves official Manim documentation snippets and memorizes 5-star solutions for instant recall.
+- **Resilient Multi-Provider LLM Engine**: Automatically uses Cloud API (OpenAI, Gemini, etc.) if configured, with instant zero-downtime fallback to local GPU-accelerated Ollama (`qwen2.5-coder:7b`).
+- **High-Performance Native Renderer**: Direct execution using local Manim Community and MiKTeX with optional Docker sandbox support.
+- **Modern Web Studio**: Glassmorphism dark-mode UI with live pipeline step tracking, preset math pills, and code preview.
 
-## Getting Started
+---
 
-1.  **Install Dependencies**:
-    ```bash
-    poetry install
-    ```
+## Quick Start
 
-2.  **Run Services**:
-    ```bash
-    docker-compose up -d
-    ```
+### 1. Requirements
 
-3.  **Start API**:
-    ```bash
-    poetry run uvicorn app.api.main:app --reload
-    ```
+- Python 3.10+ (Poetry managed)
+- Manim Community and FFmpeg
+- MiKTeX or TeX Live for LaTeX mathematical notation
+- NVIDIA GPU (RTX series recommended for Ollama)
+- Ollama with `qwen2.5-coder:7b` (for local inference)
 
-4.  **Start Worker**:
-    ```bash
-    poetry run celery -A workers.celery_app worker --loglevel=info
-    ```
+### 2. Configuration (.env)
+
+Create or update `.env` in the project root:
+
+```env
+# AI Model Selection (auto, ollama, openai, etc.)
+LLM_PROVIDER=auto
+OLLAMA_MODEL=qwen2.5-coder:7b
+OLLAMA_BASE_URL=http://localhost:11434
+
+# Optional: Cloud API Key for ultra-fast generation
+OPENAI_API_KEY=your_key_here
+OPENAI_MODEL=gpt-4o-mini
+
+# Rendering Configuration (native or docker)
+RENDER_MODE=native
+MANIM_QUALITY=-ql
+```
+
+### 3. Run Web Studio
+
+Start the FastAPI server:
+
+```bash
+poetry run python -m uvicorn app.api.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+Open your browser at `http://127.0.0.1:8000` to access the MathAnim AI Video Studio.
+
+---
+
+## Testing
+
+Run the automated integration test suite:
+
+```bash
+poetry run python -m unittest tests/test_integration.py
+```
+
+---
 
 ## License
 

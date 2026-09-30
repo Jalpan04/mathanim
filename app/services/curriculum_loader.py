@@ -21,42 +21,43 @@ def _load_registry() -> list[dict]:
     return _registry
 
 
-def find_by_keyword(user_input: str) -> Optional[dict]:
+def find_archetype(user_input: str) -> Optional[str]:
     """
-    Finds a curriculum topic matching any of the user's words.
-    Returns the topic dict (with archetype + params) or None.
+    Finds the best-matching archetype for the user's input based on
+    curriculum keywords. Returns the archetype string or None.
     """
     topics = _load_registry()
     lower = user_input.lower()
-    best_match = None
+    best_archetype = None
     best_score = 0
 
     for topic in topics:
         score = 0
+        topic_name = topic.get("name", "").lower()
+        if topic_name in lower or lower in topic_name:
+            score += 10
+
         for kw in topic.get("keywords", []):
             if kw.lower() in lower:
-                score += len(kw.split())  # Reward longer keyword matches
+                score += len(kw.split())
+
         if score > best_score:
             best_score = score
-            best_match = topic
+            best_archetype = topic.get("archetype")
 
-    if best_match and best_score > 0:
-        print(f"CurriculumLoader: Matched topic {best_match['id']} '{best_match['name']}' (score={best_score})")
-        return best_match
+    if best_archetype and best_score > 0:
+        print(f"CurriculumLoader: Matched archetype '{best_archetype}' (score={best_score})")
+        return best_archetype
 
     return None
 
 
 def get_by_id(topic_id: int) -> Optional[dict]:
-    """
-    Returns a topic by its numeric ID.
-    """
+    """Returns a topic by its numeric ID."""
     topics = _load_registry()
     return next((t for t in topics if t["id"] == topic_id), None)
 
 
 def list_all() -> list[dict]:
-    """
-    Returns all 50 topics.
-    """
+    """Returns all topics."""
     return _load_registry()

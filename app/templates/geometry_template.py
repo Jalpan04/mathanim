@@ -1,32 +1,32 @@
+# REFERENCE TEMPLATE: Geometry Archetype
+# The LLM should adapt this pattern for any shape, area, perimeter question.
+# This example draws a circle and shows its area formula.
+
 from manim import *
+import numpy as np
+
 
 class MathScene(Scene):
     def construct(self):
-        # Parameters to be replaced
-        # {{ SHAPE }} - e.g. "Circle"
-        # {{ RADIUS }} - e.g. "2"
-        # {{ FORMULA }} - e.g. "Area = \\pi r^2"
-        # {{ CALCULATION }} - e.g. "Area = \\pi (2)^2 = 4\\pi"
-        
-        radius_val = {{ RADIUS }}
-        
-        shape = Circle(radius=radius_val)
-        shape.set_fill(BLUE, opacity=0.5)
-        # Ensure it fits the screen (Max height is 8, so 6 is safe)
-        if shape.height > 6:
-            shape.scale_to_fit_height(6)
-        
-        radius_line = Line(shape.get_center(), shape.get_right(), color=RED)
-        radius_label = MathTex("r = " + str(radius_val)).next_to(radius_line, UP, buff=0.1)
-        
-        formula = MathTex("""{{ FORMULA }}""").to_edge(UP, buff=0.5)
-        calculation = MathTex("""{{ CALCULATION }}""").next_to(formula, DOWN, buff=0.5)
-        
-        # Animation
-        self.play(Create(shape))
-        self.play(Create(radius_line), Write(radius_label))
-        self.wait(1)
+        title = Text("Area of a Circle", font_size=36).to_edge(UP)
+        self.play(Write(title))
+        self.wait(0.5)
+
+        circle = Circle(radius=2.0, color=BLUE, fill_color=BLUE_D, fill_opacity=0.3)
+        self.play(Create(circle))
+        self.wait(0.5)
+
+        radius_line = Line(circle.get_center(), circle.get_right(), color=YELLOW)
+        r_label = MathTex(r"r", font_size=30).next_to(radius_line, DOWN, buff=0.1)
+        self.play(Create(radius_line), Write(r_label))
+        self.wait(0.5)
+
+        formula = MathTex(r"A = \pi r^2", font_size=44).next_to(circle, DOWN, buff=0.8)
         self.play(Write(formula))
-        self.wait(1)
-        self.play(Write(calculation))
+        self.wait(0.5)
+
+        result = MathTex(
+            r"A = \pi (2)^2 = 4\pi", font_size=40
+        ).next_to(formula, DOWN, buff=0.4)
+        self.play(Write(result))
         self.wait(2)
