@@ -244,7 +244,113 @@ async function handleRating(rating) {
   }
 }
 
-// Render the Step Breakdown drawer
+// Detect if a string represents primarily a mathematical expression/formula
+function isFormulaString(str) {
+  if (!str) return false;
+  const s = String(str).trim();
+  // Check for LaTeX commands, math symbols, or delimiters
+  if (/[\\[\]{}^_]|\$|\\(?:frac|int|iint|iiint|sqrt|sum|prod|cdot|pm|times|div|partial|infty|alpha|beta|gamma|theta|pi|sigma|sin|cos|tan|log|ln|dx|dy|dt)\b/.test(s)) {
+    return true;
+  }
+  // Check for algebraic equations with numbers and operators (e.g. 2x + 5 = 15 or y = x^2 - 4)
+  if (/[=<>≈]/.test(s) && (/[0-9]/.test(s) || /[+\-*/^]/.test(s))) {
+    return true;
+  }
+  return false;
+}
+
+// Compile LaTeX expressions and math formulas into typeset KaTeX HTML
+function compileLatex(text, forceDisplay = false) {
+  if (!text) return "";
+  const raw = String(text).trim();
+
+  // If KaTeX CDN is not loaded, fallback gracefully to escaped text
+  if (typeof katex === "undefined") {
+    return escapeHtml(raw);
+  }
+
+  // 1. Check if string is enclosed in display math $$...$$ or \[...\]
+  if (/^\$\$[\s\S]*\$\$$/.test(raw) || /^\\\[[\s\S]*\\\]$/.test(raw)) {
+    const math = raw.replace(/^\$\$|^\\\[|\$\$$|\\\]$/g, "").trim();
+    try {
+      return katex.renderToString(math, { displayMode: true, throwOnError: false });
+    } catch (_) {
+      return escapeHtml(raw);
+    }
+  }
+
+  // 2. Check if string is enclosed in inline math $...$ or \(...\)
+  if (/^\$[\s\S]*\$$/.test(raw) || /^\\\(|\$$|\\\)$/.test(raw)) {
+    const math = raw.replace(/^\$|^\\\(|\$$|\\\)$/g, "").trim();
+    try {
+      return katex.renderToString(math, { displayMode: forceDisplay, throwOnError: false });
+    } catch (_) {
+      return escapeHtml(raw);
+    }
+  }
+
+  // 3. Standalone pure LaTeX equation (e.g. F(x) = \int (x^{2})\,dx = \frac{x^{3}}{3} + C)
+  const hasLatexCommands = /\\(?:frac|int|iint|iiint|sqrt|sum|prod|cdot|pm|times|div|partial|infty|left|right|vec|mathbf|alpha|beta|gamma|theta|pi|sigma|sin|cos|tan|log|ln|dx|dy|dt)\b|\^|\_\{|\\[,;! ]/.test(raw);
+
+  if (hasLatexCommands) {
+    // Check if it's primarily an equation rather than an entire English paragraph
+    const longWords = raw.replace(/\\(?:frac|sqrt|left|right|text|partial|times|cdot|int|sum)\{[^{}]*\}/g, "")
+                         .match(/[A-Za-z]{5,}/g) || [];
+    if (longWords.length <= 2) {
+      try {
+        return katex.renderToString(raw, { displayMode: forceDisplay, throwOnError: false });
+      } catch (e) {
+        console.warn("KaTeX render error on:", raw, e);
+      }
+    }
+  }
+
+  // 4. Mixed text with embedded $...$ or $$...$$ formulas
+  const regex = /(\$\$[\s\S]+?\$\$|\$[^\$\n]+?\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\))/g;
+  if (regex.test(raw)) {
+    let segments = [];
+    let lastIdx = 0;
+    regex.lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(raw)) !== null) {
+      if (match.index > lastIdx) {
+        segments.push(escapeHtml(raw.slice(lastIdx, match.index)));
+      }
+      const token = match[0];
+      let mathStr = token;
+      let isBlock = false;
+      if (token.startsWith("$$") || token.startsWith("\\[")) {
+        mathStr = token.slice(2, -2).trim();
+        isBlock = true;
+      } else {
+        mathStr = token.slice(1, -1).trim();
+      }
+      try {
+        segments.push(katex.renderToString(mathStr, { displayMode: isBlock, throwOnError: false }));
+      } catch (_) {
+        segments.push(escapeHtml(token));
+      }
+      lastIdx = regex.lastIndex;
+    }
+
+    if (lastIdx < raw.length) {
+      segments.push(escapeHtml(raw.slice(lastIdx)));
+    }
+    return segments.join("");
+  }
+
+  // 5. Handle inline expressions with LaTeX fragments like \frac{a}{b} or \sqrt{...}
+  if (hasLatexCommands) {
+    try {
+      return katex.renderToString(raw, { displayMode: forceDisplay, throwOnError: false });
+    } catch (_) {}
+  }
+
+  return escapeHtml(raw);
+}
+
+// Render the Step Breakdown panel with typeset LaTeX math
 function renderStepBreakdown(stepsData) {
   const stepsBlock = $('steps');
   stepsBlock.innerHTML = "";
@@ -259,13 +365,45 @@ function renderStepBreakdown(stepsData) {
     row.className = 'step-row';
 
     const idxStr = (i + 1) < 10 ? `0${i + 1}` : `${i + 1}`;
-    let html = `<span class="step-idx">${idxStr}</span>` +
-               `<div class="step-body">` +
-                 `<div class="step-math">${escapeHtml(s[0])}</div>` +
-                 `<div class="step-txt">${escapeHtml(s[1])}</div>`;
 
-    if (s[2]) {
-      html += `<div class="step-note">${escapeHtml(s[2])}</div>`;
+    let partA = s[0];
+    let partB = s[1];
+    let note = s[2];
+
+    // Intelligently assign formula to .step-math and title/explanation to label/text
+    const partAIsFormula = isFormulaString(partA);
+    const partBIsFormula = isFormulaString(partB);
+
+    let mathContent = partA;
+    let textContent = partB;
+    let titleContent = "";
+
+    if (!partAIsFormula && partBIsFormula) {
+      // e.g. partA is "Antiderivative" and partB is "F(x) = \int (x^2)\,dx = \frac{x^3}{3} + C"
+      titleContent = partA;
+      mathContent = partB;
+      textContent = "";
+    } else if (partAIsFormula && !partBIsFormula) {
+      // e.g. partA is formula and partB is descriptive text
+      mathContent = partA;
+      textContent = partB;
+    }
+
+    let html = `<span class="step-idx">${idxStr}</span>` +
+               `<div class="step-body">`;
+
+    if (titleContent) {
+      html += `<div class="step-label">${escapeHtml(titleContent)}</div>`;
+    }
+
+    html += `<div class="step-math">${compileLatex(mathContent, true)}</div>`;
+
+    if (textContent) {
+      html += `<div class="step-txt">${compileLatex(textContent, false)}</div>`;
+    }
+
+    if (note && note !== textContent && note !== titleContent) {
+      html += `<div class="step-note">${compileLatex(note, false)}</div>`;
     }
 
     html += `</div>`;

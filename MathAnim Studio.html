@@ -7,7 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
   <link rel="stylesheet" href="/static/style.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <style>
     /* Inlined Fallback Styles matching Obsidian Theme */
     :root {
@@ -272,8 +274,18 @@
     .step-row:first-child { padding-top: 0; }
     .step-idx { font-size: 12px; font-weight: 700; color: var(--text-dim); padding-top: 3px; }
     .step-body { display: flex; flex-direction: column; gap: 4px; }
-    .step-math { font-family: var(--font-serif); font-size: 18px; color: var(--text-main); line-height: 1.3; word-break: break-word; }
-    .step-txt { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    .step-label {
+      font-size: 11px; font-weight: 700; color: var(--accent-gold);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px;
+    }
+    .step-math {
+      font-family: var(--font-serif); font-size: 18px; color: var(--text-main);
+      line-height: 1.35; word-break: break-word; overflow-x: auto;
+    }
+    .step-math .katex { font-size: 1.05em; color: var(--text-main); }
+    .step-math .katex-display { margin: 4px 0; text-align: left; }
+    .step-txt { font-size: 13px; color: var(--text-muted); font-weight: 500; line-height: 1.45; }
+    .step-txt .katex, .step-note .katex { font-size: 0.95em; color: var(--accent-gold); }
     .step-note {
       font-size: 12px; color: var(--text-muted); background: var(--bg-sidebar);
       border-left: 2px solid var(--accent); padding: 6px 10px; margin-top: 6px;

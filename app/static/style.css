@@ -549,18 +549,45 @@ details[open] summary .chevron {
   gap: 4px;
 }
 
+.step-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+
 .step-math {
   font-family: var(--font-serif);
   font-size: 18px;
   color: var(--text-main);
-  line-height: 1.3;
+  line-height: 1.35;
   word-break: break-word;
+  overflow-x: auto;
+}
+
+.step-math .katex {
+  font-size: 1.05em;
+  color: var(--text-main);
+}
+
+.step-math .katex-display {
+  margin: 4px 0;
+  text-align: left;
 }
 
 .step-txt {
   font-size: 13px;
   color: var(--text-muted);
   font-weight: 500;
+  line-height: 1.45;
+}
+
+.step-txt .katex,
+.step-note .katex {
+  font-size: 0.95em;
+  color: var(--accent-gold);
 }
 
 .step-note {
