@@ -1,148 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MathAnim - Autonomous Math Animation Studio</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MathAnim Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
-  <div class="background-glow"></div>
-  
-  <div class="app-layout">
-    <!-- Header -->
-    <header class="studio-header">
-      <div class="brand">
-        <div class="brand-logo">MA</div>
-        <div>
-          <h1 class="brand-title">MathAnim Studio</h1>
-          <p class="brand-subtitle">Autonomous Generative Mathematical Animation Engine</p>
-        </div>
+
+  <header>
+    <div class="brand">
+      <div class="brand-badge">M</div>
+      <span class="brand-title">MathAnim Studio</span>
+    </div>
+
+    <div class="header-badges">
+      <div class="badge badge-gpu">
+        <span class="badge-dot"></span>
+        <span>GPU Accelerated</span>
       </div>
-      
-      <div class="system-badges" id="systemBadges">
-        <span class="badge badge-gpu" id="gpuBadge">GPU Accelerated</span>
-        <span class="badge badge-model" id="modelBadge">Loading AI...</span>
-        <span class="badge badge-engine">Manim Native</span>
+      <div class="badge badge-model">
+        <span class="badge-dot" style="background:#4ade80;"></span>
+        <span id="modelBadge">Loading AI...</span>
       </div>
-    </header>
+      <div class="badge badge-engine">
+        <span>Manim Native</span>
+      </div>
+    </div>
+  </header>
 
-    <!-- Main Workspace -->
-    <main class="workspace">
-      <!-- Input Panel -->
-      <section class="panel input-panel">
-        <div class="panel-header">
-          <label for="problemInput" class="panel-title">Mathematical Problem or Visualization Request</label>
-          <span class="panel-hint">Natural language, algebraic equations, or calculus expressions</span>
-        </div>
+  <div class="app-grid">
+    <aside>
+      <div>
+        <div class="section-label">Input Problem</div>
+        <textarea id="q" placeholder="Type a mathematical problem...">Solve 2x + 5 = 15</textarea>
+        <button class="primary-btn" id="go">Render Sequence</button>
+        <div class="error-banner" id="errorBanner"></div>
 
-        <textarea
-          id="problemInput"
-          placeholder="e.g. Graph y = x^2 - 4 with roots and vertex highlighted&#10;e.g. Solve 3x + 7 = 22 step by step with explanations&#10;e.g. Visualize the area under y = sin(x) from 0 to pi"
-        ></textarea>
-
-        <!-- Example Problem Pills -->
-        <div class="examples-section">
-          <span class="examples-label">Quick Presets:</span>
-          <div class="examples-grid" id="examplesGrid">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-
-        <div class="action-row">
-          <button id="submitBtn" class="primary-btn">
-            <span class="btn-text">Synthesize & Render Animation</span>
-          </button>
-        </div>
-
-        <!-- Pipeline Progress Tracker -->
-        <div id="statusContainer" class="status-tracker">
+        <div class="pipeline-tracker" id="pipelineTracker">
           <div class="tracker-header">
-            <span id="statusText">Pipeline Idle</span>
-            <span id="progressText" class="progress-percent">0%</span>
+            <span id="trackerStatus">Synthesizing...</span>
+            <span id="trackerPercent">0%</span>
           </div>
-
           <div class="progress-track">
-            <div id="progressBar" class="progress-fill"></div>
-          </div>
-
-          <!-- Step Indicators -->
-          <div class="pipeline-steps">
-            <div class="step" id="stepMath">
-              <span class="step-dot"></span>
-              <span class="step-label">1. Math Reasoning</span>
-            </div>
-            <div class="step" id="stepArch">
-              <span class="step-dot"></span>
-              <span class="step-label">2. Template & RAG</span>
-            </div>
-            <div class="step" id="stepDev">
-              <span class="step-dot"></span>
-              <span class="step-label">3. Code Generation</span>
-            </div>
-            <div class="step" id="stepRender">
-              <span class="step-dot"></span>
-              <span class="step-label">4. Manim Render</span>
-            </div>
+            <div class="progress-fill" id="progressFill"></div>
           </div>
         </div>
+      </div>
 
-        <!-- Error Message -->
-        <div id="errorMessage" class="error-banner"></div>
-      </section>
-
-      <!-- Output Panel -->
-      <section id="outputPanel" class="panel output-panel">
-        <div class="output-tabs">
-          <button class="tab-btn active" id="tabVideoBtn" onclick="switchTab('video')">Rendered Video</button>
-          <button class="tab-btn" id="tabCodeBtn" onclick="switchTab('code')">Generated Manim Script</button>
+      <div>
+        <div class="section-label">Quick Examples</div>
+        <div id="examplesContainer">
+          <button class="preset-chip">Solve 2x + 5 = 15</button>
+          <button class="preset-chip">Area of a circle with radius 3</button>
+          <button class="preset-chip">Integral of x^2 from 0 to 2</button>
         </div>
+      </div>
+    </aside>
 
-        <!-- Video Tab Content -->
-        <div id="videoTabContent" class="tab-content active">
-          <div class="video-wrapper">
-            <video id="resultVideo" controls playsinline>
-              <source id="resultSource" src="" type="video/mp4" />
-              Your browser does not support HTML5 video playback.
-            </video>
+    <main>
+      <div class="viewport-card">
+        <div class="stage" id="stage">
+          <div class="stage-sequence" id="stageSequence"></div>
+          <video id="resultVideo" controls playsinline>
+            <source id="resultSource" src="" type="video/mp4" />
+            Your browser does not support HTML5 video playback.
+          </video>
+        </div>
+        <div class="action-bar">
+          <div class="action-left">
+            <button class="sec-btn" id="replay">Replay</button>
+            <a class="sec-btn" id="dl" href="#" download="MathScene.mp4">Export MP4</a>
           </div>
-
-          <div class="video-footer">
-            <a id="downloadLink" href="#" download class="secondary-btn">Download MP4</a>
-            
-            <!-- Learning Mode Rating -->
-            <div class="rating-box" id="ratingContainer">
-              <span class="rating-label">Rate this output:</span>
-              <div class="star-rating">
-                <span onclick="submitRating(1)">★</span>
-                <span onclick="submitRating(2)">★</span>
-                <span onclick="submitRating(3)">★</span>
-                <span onclick="submitRating(4)">★</span>
-                <span onclick="submitRating(5)">★</span>
-              </div>
-              <span id="ratingFeedback" class="rating-feedback"></span>
+          <div class="action-right">
+            <div class="star-rating" id="starRating">
+              <span data-val="1">★</span>
+              <span data-val="2">★</span>
+              <span data-val="3">★</span>
+              <span data-val="4">★</span>
+              <span data-val="5">★</span>
             </div>
+            <span id="ratingStatus"></span>
           </div>
         </div>
+      </div>
 
-        <!-- Code Tab Content -->
-        <div id="codeTabContent" class="tab-content">
-          <div class="code-header">
-            <span class="code-title">Python Manim Code</span>
-            <button class="copy-btn" id="copyCodeBtn" onclick="copyGeneratedCode()">Copy Code</button>
-          </div>
-          <pre class="code-block"><code id="codeDisplay"># Code will appear here after generation...</code></pre>
+      <details open id="stepDrawer">
+        <summary><span>Step Breakdown</span><span class="chevron">↓</span></summary>
+        <div class="drawer-inner">
+          <div class="solution-block" id="steps"></div>
         </div>
-      </section>
+      </details>
+
+      <details id="codeDrawer">
+        <summary><span>Manim Code</span><span class="chevron">↓</span></summary>
+        <div class="drawer-inner">
+          <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+            <button class="sec-btn" id="copyBtn">Copy Code</button>
+          </div>
+          <pre><code id="codeDisplay">from manim import *
+
+class MathSolution(Scene):
+    def construct(self):
+        eq1 = MathTex("2x + 5 = 15")
+        self.play(Write(eq1))
+        eq2 = MathTex("2x = 10")
+        self.play(Transform(eq1, eq2))
+        eq3 = MathTex("x = 5")
+        self.play(Transform(eq1, eq3))</code></pre>
+        </div>
+      </details>
     </main>
-
-    <!-- Footer -->
-    <footer class="studio-footer">
-      <span>MathAnim &bull; Fast, Accurate Autonomous Math Visualizer &bull; Powered by LLM Agent Swarm & Manim</span>
-    </footer>
   </div>
 
   <script src="/static/script.js"></script>

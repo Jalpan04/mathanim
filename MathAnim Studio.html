@@ -1,365 +1,342 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MathAnim Studio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  /* Classic Obsidian Theme */
-  --bg-app: #080808;
-  --bg-sidebar: #111111;
-  --bg-card: #1a1a1a;
-  --bg-card-hover: #262626;
-  --stage-bg: #000000;
-  
-  --border: #2a2a2a;
-  --border-subtle: #1f1f1f;
-  
-  --text-main: #ffffff;
-  --text-muted: #a1a1aa;
-  --text-dim: #52525b;
-  
-  --accent: #ffffff;
-  --accent-gold: #fde047;
-  
-  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-serif: 'Newsreader', serif;
-  --font-mono: 'Fira Code', monospace;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg-app);
-  color: var(--text-main);
-  font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.5;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-header {
-  height: 54px;
-  border-bottom: 1px solid var(--border-subtle);
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg-sidebar);
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.brand-badge {
-  width: 24px;
-  height: 24px;
-  background: var(--accent);
-  border-radius: 5px;
-  color: #000;
-  font-weight: 800;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.brand-title {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-}
-
-.app-grid {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  flex: 1;
-}
-
-@media (max-width: 860px) {
-  .app-grid { grid-template-columns: 1fr; }
-}
-
-aside {
-  background: var(--bg-sidebar);
-  border-right: 1px solid var(--border-subtle);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.section-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-dim);
-  margin-bottom: 8px;
-}
-
-textarea#q {
-  width: 100%;
-  height: 110px;
-  background: var(--bg-app);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px;
-  color: var(--text-main);
-  font-family: var(--font-serif);
-  font-size: 19px;
-  resize: none;
-  transition: border-color 0.15s;
-}
-
-textarea#q:focus {
-  outline: none;
-  border-color: var(--accent-gold);
-}
-
-.primary-btn {
-  width: 100%;
-  background: var(--text-main);
-  color: var(--bg-app);
-  border: none;
-  border-radius: 6px;
-  padding: 10px 14px;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  margin-top: 8px;
-  transition: opacity 0.15s;
-}
-
-.primary-btn:hover { opacity: 0.9; }
-
-.preset-chip {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-muted);
-  padding: 8px 10px;
-  border-radius: 6px;
-  text-align: left;
-  font-size: 12px;
-  cursor: pointer;
-  margin-bottom: 6px;
-  width: 100%;
-  transition: all 0.15s;
-}
-
-.preset-chip:hover {
-  background: var(--bg-card-hover);
-  color: var(--text-main);
-  border-color: var(--border);
-}
-
-main {
-  padding: 24px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-width: 1000px;
-}
-
-.viewport-card {
-  background: var(--bg-sidebar);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.stage {
-  background: var(--stage-bg);
-  aspect-ratio: 16/9;
-  padding: 6% 10%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 14px;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.stage div {
-  font-family: var(--font-serif);
-  font-size: clamp(20px, 3vw, 32px);
-  color: var(--text-main);
-  opacity: 0;
-  transform: translateY(6px);
-  transition: all 0.3s ease;
-}
-
-.stage div.on { opacity: 0.3; transform: none; }
-.stage div.cur { opacity: 1; transform: none; color: var(--accent-gold); }
-
-.action-bar {
-  padding: 10px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.sec-btn {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.sec-btn:hover { background: var(--bg-card-hover); }
-
-details {
-  background: var(--bg-sidebar);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-summary {
-  padding: 12px 16px;
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--text-muted);
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  user-select: none;
-}
-
-summary:hover { color: var(--text-main); }
-
-.drawer-inner {
-  padding: 16px 20px;
-  border-top: 1px solid var(--border-subtle);
-  background: var(--bg-app);
-}
-
-.solution-block {
-  display: flex;
-  flex-direction: column;
-}
-
-.step-row {
-  display: grid;
-  grid-template-columns: 32px 1fr;
-  gap: 14px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.step-row:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.step-row:first-child {
-  padding-top: 0;
-}
-
-.step-idx {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-dim);
-  padding-top: 3px;
-}
-
-.step-body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.step-math {
-  font-family: var(--font-serif);
-  font-size: 20px;
-  color: var(--text-main);
-  line-height: 1.2;
-}
-
-.step-txt {
-  font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.step-note {
-  font-size: 12px;
-  color: var(--text-muted);
-  background: var(--bg-sidebar);
-  border-left: 2px solid var(--accent);
-  padding: 6px 10px;
-  margin-top: 6px;
-  border-radius: 0 4px 4px 0;
-  line-height: 1.45;
-}
-
-pre {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-muted);
-  line-height: 1.6;
-  overflow-x: auto;
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MathAnim Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+  <style>
+    /* Inlined Fallback Styles matching Obsidian Theme */
+    :root {
+      --bg-app: #080808;
+      --bg-sidebar: #111111;
+      --bg-card: #1a1a1a;
+      --bg-card-hover: #262626;
+      --stage-bg: #000000;
+      --border: #2a2a2a;
+      --border-subtle: #1f1f1f;
+      --text-main: #ffffff;
+      --text-muted: #a1a1aa;
+      --text-dim: #52525b;
+      --accent: #ffffff;
+      --accent-gold: #fde047;
+      --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-serif: 'Newsreader', serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-app);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      height: 54px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-sidebar);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-badge {
+      width: 24px; height: 24px;
+      background: var(--accent);
+      border-radius: 5px;
+      color: #000;
+      font-weight: 800;
+      font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .brand-title {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+    .header-badges { display: flex; align-items: center; gap: 8px; }
+    .badge {
+      font-size: 11px; font-weight: 600;
+      padding: 4px 8px; border-radius: 4px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dim); }
+    .badge-gpu .badge-dot { background: var(--accent-gold); }
+    .badge-model { color: var(--text-main); }
+    .app-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      flex: 1;
+    }
+    @media (max-width: 860px) { .app-grid { grid-template-columns: 1fr; } }
+    aside {
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-subtle);
+      padding: 20px;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .section-label {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+    textarea#q {
+      width: 100%; height: 110px;
+      background: var(--bg-app);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text-main);
+      font-family: var(--font-serif);
+      font-size: 19px;
+      resize: none;
+      transition: border-color 0.15s;
+    }
+    textarea#q:focus { outline: none; border-color: var(--accent-gold); }
+    .primary-btn {
+      width: 100%;
+      background: var(--text-main);
+      color: var(--bg-app);
+      border: none;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-weight: 600; font-size: 13px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.15s;
+    }
+    .primary-btn:hover { opacity: 0.9; }
+    .primary-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .preset-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 8px 10px;
+      border-radius: 6px;
+      text-align: left;
+      font-size: 12px;
+      cursor: pointer;
+      margin-bottom: 6px;
+      width: 100%;
+      transition: all 0.15s;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .preset-chip:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border-color: var(--border);
+    }
+    .preset-chip span.chip-cat { color: var(--text-dim); font-weight: 600; margin-right: 4px; }
+    .pipeline-tracker {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .tracker-header {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;
+    }
+    .progress-track {
+      width: 100%; height: 3px; background: var(--border-subtle); border-radius: 2px; overflow: hidden;
+    }
+    .progress-fill { height: 100%; width: 0%; background: var(--accent-gold); transition: width 0.3s ease; }
+    .error-banner {
+      display: none; font-size: 12px; color: #f87171;
+      background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 6px; padding: 8px 10px; margin-top: 8px;
+    }
+    main {
+      padding: 24px 28px;
+      display: flex; flex-direction: column; gap: 16px;
+      max-width: 1000px;
+    }
+    .viewport-card {
+      background: var(--bg-sidebar);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .stage {
+      background: var(--stage-bg);
+      aspect-ratio: 16/9;
+      padding: 6% 10%;
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      position: relative;
+      overflow: hidden;
+    }
+    .stage-sequence {
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 14px; width: 100%; height: 100%;
+    }
+    .stage-sequence div {
+      font-family: var(--font-serif);
+      font-size: clamp(20px, 3vw, 32px);
+      color: var(--text-main);
+      opacity: 0; transform: translateY(6px);
+      transition: all 0.3s ease;
+    }
+    .stage-sequence div.on { opacity: 0.3; transform: none; }
+    .stage-sequence div.cur { opacity: 1; transform: none; color: var(--accent-gold); }
+    #resultVideo { display: none; width: 100%; height: 100%; object-fit: contain; background: #000; }
+    .action-bar { padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
+    .action-left { display: flex; align-items: center; gap: 8px; }
+    .action-right { display: flex; align-items: center; gap: 10px; }
+    .sec-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: background 0.15s;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .sec-btn:hover { background: var(--bg-card-hover); }
+    .star-rating { display: flex; align-items: center; gap: 3px; cursor: pointer; }
+    .star-rating span { font-size: 14px; color: var(--text-dim); transition: color 0.15s; }
+    .star-rating span:hover, .star-rating span.active { color: var(--accent-gold); }
+    details { background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    summary {
+      padding: 12px 16px; font-weight: 600; font-size: 13px; color: var(--text-muted);
+      cursor: pointer; display: flex; justify-content: space-between; user-select: none;
+    }
+    summary:hover { color: var(--text-main); }
+    summary .chevron { transition: transform 0.2s ease; font-size: 12px; }
+    details[open] summary .chevron { transform: rotate(180deg); }
+    .drawer-inner { padding: 16px 20px; border-top: 1px solid var(--border-subtle); background: var(--bg-app); }
+    .solution-block { display: flex; flex-direction: column; }
+    .step-row {
+      display: grid; grid-template-columns: 32px 1fr; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-subtle);
+    }
+    .step-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .step-row:first-child { padding-top: 0; }
+    .step-idx { font-size: 12px; font-weight: 700; color: var(--text-dim); padding-top: 3px; }
+    .step-body { display: flex; flex-direction: column; gap: 4px; }
+    .step-math { font-family: var(--font-serif); font-size: 20px; color: var(--text-main); line-height: 1.2; }
+    .step-txt { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    .step-note {
+      font-size: 12px; color: var(--text-muted); background: var(--bg-sidebar);
+      border-left: 2px solid var(--accent); padding: 6px 10px; margin-top: 6px;
+      border-radius: 0 4px 4px 0; line-height: 1.45;
+    }
+    pre {
+      font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);
+      line-height: 1.6; overflow-x: auto; white-space: pre-wrap; word-break: break-all;
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <div class="brand">
-    <div class="brand-badge">M</div>
-    <span class="brand-title">MathAnim Studio</span>
-  </div>
-</header>
-
-<div class="app-grid">
-  <aside>
-    <div>
-      <div class="section-label">Input Problem</div>
-      <textarea id="q">Solve 2x + 5 = 15</textarea>
-      <button class="primary-btn" id="go">Render Sequence</button>
+  <header>
+    <div class="brand">
+      <div class="brand-badge">M</div>
+      <span class="brand-title">MathAnim Studio</span>
     </div>
 
-    <div>
-      <div class="section-label">Quick Examples</div>
-      <button class="preset-chip">Solve 2x + 5 = 15</button>
-      <button class="preset-chip">Area of a circle with radius 3</button>
-      <button class="preset-chip">Integral of x² from 0 to 2</button>
-    </div>
-  </aside>
-
-  <main>
-    <div class="viewport-card">
-      <div class="stage" id="stage"></div>
-      <div class="action-bar">
-        <button class="sec-btn" id="replay">Replay</button>
-        <button class="sec-btn" id="dl">Export MP4</button>
+    <div class="header-badges">
+      <div class="badge badge-gpu">
+        <span class="badge-dot"></span>
+        <span>GPU Accelerated</span>
+      </div>
+      <div class="badge badge-model">
+        <span class="badge-dot" style="background:#4ade80;"></span>
+        <span id="modelBadge">Loading AI...</span>
+      </div>
+      <div class="badge badge-engine">
+        <span>Manim Native</span>
       </div>
     </div>
+  </header>
 
-    <details>
-      <summary><span>Step Breakdown</span><span>↓</span></summary>
-      <div class="drawer-inner">
-        <div class="solution-block" id="steps"></div>
+  <div class="app-grid">
+    <aside>
+      <div>
+        <div class="section-label">Input Problem</div>
+        <textarea id="q" placeholder="Type a mathematical problem...">Solve 2x + 5 = 15</textarea>
+        <button class="primary-btn" id="go">Render Sequence</button>
+        <div class="error-banner" id="errorBanner"></div>
+
+        <div class="pipeline-tracker" id="pipelineTracker">
+          <div class="tracker-header">
+            <span id="trackerStatus">Synthesizing...</span>
+            <span id="trackerPercent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
       </div>
-    </details>
 
-    <details>
-      <summary><span>Manim Code</span><span>↓</span></summary>
-      <div class="drawer-inner">
-<pre>from manim import *
+      <div>
+        <div class="section-label">Quick Examples</div>
+        <div id="examplesContainer">
+          <button class="preset-chip">Solve 2x + 5 = 15</button>
+          <button class="preset-chip">Area of a circle with radius 3</button>
+          <button class="preset-chip">Integral of x^2 from 0 to 2</button>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="viewport-card">
+        <div class="stage" id="stage">
+          <div class="stage-sequence" id="stageSequence"></div>
+          <video id="resultVideo" controls playsinline>
+            <source id="resultSource" src="" type="video/mp4" />
+            Your browser does not support HTML5 video playback.
+          </video>
+        </div>
+        <div class="action-bar">
+          <div class="action-left">
+            <button class="sec-btn" id="replay">Replay</button>
+            <a class="sec-btn" id="dl" href="#" download="MathScene.mp4">Export MP4</a>
+          </div>
+          <div class="action-right">
+            <div class="star-rating" id="starRating">
+              <span data-val="1">★</span>
+              <span data-val="2">★</span>
+              <span data-val="3">★</span>
+              <span data-val="4">★</span>
+              <span data-val="5">★</span>
+            </div>
+            <span id="ratingStatus" style="font-size:11px; color:var(--text-dim);"></span>
+          </div>
+        </div>
+      </div>
+
+      <details open id="stepDrawer">
+        <summary><span>Step Breakdown</span><span class="chevron">↓</span></summary>
+        <div class="drawer-inner">
+          <div class="solution-block" id="steps"></div>
+        </div>
+      </details>
+
+      <details id="codeDrawer">
+        <summary><span>Manim Code</span><span class="chevron">↓</span></summary>
+        <div class="drawer-inner">
+          <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+            <button class="sec-btn" id="copyBtn">Copy Code</button>
+          </div>
+          <pre><code id="codeDisplay">from manim import *
 
 class MathSolution(Scene):
     def construct(self):
@@ -368,88 +345,12 @@ class MathSolution(Scene):
         eq2 = MathTex("2x = 10")
         self.play(Transform(eq1, eq2))
         eq3 = MathTex("x = 5")
-        self.play(Transform(eq1, eq3))</pre>
-      </div>
-    </details>
-  </main>
-</div>
+        self.play(Transform(eq1, eq3))</code></pre>
+        </div>
+      </details>
+    </main>
+  </div>
 
-<script>
-var $ = function(i) { return document.getElementById(i); };
-
-var S = [
-  [
-    '2x + 5 = 15', 
-    'Start with the equation.',
-    'Isolate the variable term (2x) by undoing addition first.'
-  ],
-  [
-    '2x = 10', 
-    'Subtract 5 from both sides.',
-    'Whatever operation is applied to one side must be applied to the other to preserve equality: (2x + 5) - 5 = 15 - 5.'
-  ],
-  [
-    'x = 5', 
-    'Divide both sides by 2.',
-    'Since x is multiplied by 2, perform the inverse operation (division by 2) to solve for x: 10 / 2 = 5.'
-  ],
-  [
-    '2(5) + 5 = 15', 
-    'Verify substitution result.',
-    'Substitute x = 5 back into the original equation: 2(5) + 5 = 10 + 5 = 15. The solution holds true.'
-  ]
-];
-
-var timer = null;
-
-S.forEach(function(s, i) {
-  var d = document.createElement('div');
-  d.textContent = s[0];
-  $('stage').appendChild(d);
-  
-  var row = document.createElement('div');
-  row.className = 'step-row';
-  
-  var html = '<span class="step-idx">0' + (i + 1) + '</span>' +
-             '<div class="step-body">' +
-               '<div class="step-math">' + s[0] + '</div>' +
-               '<div class="step-txt">' + s[1] + '</div>';
-               
-  if (s[2]) {
-    html += '<div class="step-note">' + s[2] + '</div>';
-  }
-  
-  html += '</div>';
-  row.innerHTML = html;
-  $('steps').appendChild(row);
-});
-
-function show(n) {
-  var d = $('stage').children;
-  for (var i = 0; i < S.length; i++) {
-    d[i].className = i < n ? 'on' : i === n ? 'cur' : '';
-  }
-}
-
-function play() {
-  clearInterval(timer);
-  var i = 0;
-  show(-1);
-  timer = setInterval(function() {
-    show(i);
-    i++;
-    if (i >= S.length) clearInterval(timer);
-  }, 2000);
-  setTimeout(function() { show(0); i = 1; }, 50);
-}
-
-$('replay').onclick = play;
-$('go').onclick = play;
-document.querySelectorAll('.preset-chip').forEach(function(b) {
-  b.onclick = function() { $('q').value = b.textContent; };
-});
-
-play();
-</script>
+  <script src="/static/script.js"></script>
 </body>
 </html>

@@ -61,6 +61,8 @@ def solve_and_render_core(problem: str, task_id: str) -> Dict[str, Any]:
     if manim_code:
         print(f"[Task {task_id}] Agent Swarm produced code. Starting render.")
         render_result = _render_code(manim_code, problem, task_id)
+        if isinstance(result, dict) and "math_solution" in result:
+            render_result["math_solution"] = result["math_solution"]
         if render_result.get("status") == "completed":
             try:
                 memory = SolutionMemory()

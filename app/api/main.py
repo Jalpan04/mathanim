@@ -154,14 +154,16 @@ async def get_status(task_id: str):
                 task_id=task_id,
                 status="completed",
                 video_url=job.get("video_path"),
-                code=job.get("code")
+                code=job.get("code"),
+                math_solution=job.get("math_solution")
             )
         elif status == "failed":
             return JobStatus(
                 task_id=task_id,
                 status="failed",
                 info=job.get("error") or job.get("info"),
-                code=job.get("code")
+                code=job.get("code"),
+                math_solution=job.get("math_solution")
             )
         else:
             return JobStatus(

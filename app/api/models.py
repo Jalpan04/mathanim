@@ -18,6 +18,7 @@ class JobStatus(BaseModel):
     video_url: Optional[str] = None
     info: Optional[str] = None
     code: Optional[str] = None
+    math_solution: Optional[str] = None
 
 
 class RatingRequest(BaseModel):
