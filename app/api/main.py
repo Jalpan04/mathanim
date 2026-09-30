@@ -35,6 +35,39 @@ executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
 LOCAL_JOBS: Dict[str, Dict[str, Any]] = {}
 
 
+@app.on_event("startup")
+async def startup_storage_cleanup():
+    """Initializes startup check and prunes old orphaned media on boot."""
+    try:
+        from app.services.pruner import prune_old_media
+        result = prune_old_media()
+        print(f"Startup storage maintenance complete: {result}")
+    except Exception as e:
+        print(f"Warning: Startup storage cleanup encountered an issue: {e}")
+
+
+@app.get("/storage-status")
+def get_storage_status():
+    """Returns current disk usage and video count statistics."""
+    from app.services.pruner import get_dir_size_bytes
+    total_bytes = get_dir_size_bytes(settings.MEDIA_DIR)
+    scenes = [d for d in settings.VIDEOS_DIR.iterdir() if d.is_dir() and d.name.startswith("scene_")] if settings.VIDEOS_DIR.exists() else []
+    return {
+        "stored_videos_count": len(scenes),
+        "max_stored_videos": settings.MAX_STORED_VIDEOS,
+        "media_size_mb": round(total_bytes / (1024 * 1024), 2),
+        "max_storage_mb": settings.MAX_STORAGE_MB,
+        "cleanup_intermediates_enabled": settings.CLEANUP_INTERMEDIATES
+    }
+
+
+@app.post("/admin/prune")
+def trigger_prune(max_videos: Optional[int] = None, max_storage_mb: Optional[int] = None):
+    """Manually triggers pruning of media files and returns freed space."""
+    from app.services.pruner import prune_old_media
+    return prune_old_media(max_videos=max_videos, max_storage_mb=max_storage_mb)
+
+
 def _run_job_in_thread(problem: str, task_id: str):
     """Executes the pipeline in background thread and updates LOCAL_JOBS."""
     LOCAL_JOBS[task_id] = {"status": "processing", "info": "Running agent swarm..."}

@@ -41,6 +41,11 @@ class Settings:
     # Celery / Redis
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
+    # Storage & Pruning Settings
+    MAX_STORED_VIDEOS: int = int(os.getenv("MAX_STORED_VIDEOS", "30"))
+    MAX_STORAGE_MB: int = int(os.getenv("MAX_STORAGE_MB", "500"))
+    CLEANUP_INTERMEDIATES: bool = os.getenv("CLEANUP_INTERMEDIATES", "true").lower() in ("true", "1", "yes")
+
 
 settings = Settings()
 

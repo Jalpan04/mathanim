@@ -138,6 +138,12 @@ def _render_code(code: str, problem_prompt: str, task_id: str) -> Dict[str, Any]
             if mp4_files:
                 rel_path = mp4_files[0].relative_to(settings.ROOT_DIR).as_posix()
                 print(f"Video generated successfully at: {rel_path}")
+
+                # Manage disk space: delete partial chunks and enforce media retention policy
+                from app.services.pruner import cleanup_task_intermediates, prune_old_media
+                cleanup_task_intermediates(task_id)
+                prune_old_media()
+
                 return {
                     "status": "completed",
                     "video_path": rel_path,
