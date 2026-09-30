@@ -141,7 +141,7 @@ aside {
 
 textarea#q {
   width: 100%;
-  height: 110px;
+  height: 140px;
   background: var(--bg-app);
   border: 1px solid var(--border);
   border-radius: 8px;

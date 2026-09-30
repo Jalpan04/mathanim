@@ -12,7 +12,6 @@ const $ = (id) => document.getElementById(id);
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", () => {
   loadSystemStatus();
-  loadExamples();
   resetToIdle();
 
   // Button actions
@@ -48,31 +47,6 @@ async function loadSystemStatus() {
     }
   } catch (e) {
     console.warn("System status unavailable:", e);
-  }
-}
-
-// Fetch preset examples and populate sidebar chips
-async function loadExamples() {
-  try {
-    const res = await fetch(`${API_URL}/examples`);
-    if (res.ok) {
-      const examples = await res.json();
-      const container = $('examplesContainer');
-      container.innerHTML = "";
-      examples.forEach((item) => {
-        const btn = document.createElement("button");
-        btn.className = "preset-chip";
-        btn.title = item.prompt;
-        btn.innerHTML = `<span class="chip-cat">${escapeHtml(item.category)}:</span> ${escapeHtml(item.prompt)}`;
-        btn.onclick = () => {
-          $('q').value = item.prompt;
-          $('q').focus();
-        };
-        container.appendChild(btn);
-      });
-    }
-  } catch (e) {
-    console.warn("Could not load examples:", e);
   }
 }
 
